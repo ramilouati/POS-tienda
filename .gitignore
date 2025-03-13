@@ -1,0 +1,11 @@
+# Ignore the virtual environment folder
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+.env
+.vscode/
+.idea/
