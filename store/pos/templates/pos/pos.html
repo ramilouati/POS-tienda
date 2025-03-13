@@ -15,6 +15,9 @@
                 <legend>Ajouter le produit </legend>
                 <div class="row align-items-end">
                     <div class="col-lg-5 col-md-5 col-sm-12">
+                        <div>
+                            <input id="code-bar" class="form-control" placeholder="Scan barcode here" />
+                        </div>
                         <div class="form-group mb-3">
                             <label for="product-id">Sélectionner le produit</label>
                             <select id="product-id" class="form-select form-select-sm">
@@ -157,11 +160,66 @@
     }
 
     $(function() {
+        // Initialize Select2
         $('#product-id').select2({
             placeholder: "Veuillez sélectionner votre produit",
             width: '100%'
         });
-
+    
+        // Function to add product to table or update quantity if it already exists
+        function addProductToTable(id, qty) {
+            if (!!prod_arr[id]) {
+                var existingRow = $('#POS-field table tbody input[name="product[]"][value="' + id + '"]').closest('tr');
+                if (existingRow.length > 0) {
+                    // Product already exists in the table, increment the quantity
+                    var currentQty = parseInt(existingRow.find('[name="qty[]"]').val());
+                    var newQty = currentQty + qty;
+                    existingRow.find('[name="qty[]"]').val(newQty);
+                    calc(); // Recalculate totals
+                } else {
+                    // Product does not exist in the table, add a new row
+                    var data = prod_arr[id];
+                    var tr = $($('noscript#item-clone').html()).clone();
+                    tr.find('[name="qty[]"]').val(qty);
+                    tr.find('[name="product[]"]').val(id);
+                    tr.find('[name="price[]"]').val(data.price);
+                    tr.find('.product_name').text(data.name);
+                    tr.find('.product_price').text(parseFloat(data.price).toLocaleString('en-US'));
+                    tr.find('.product_total').text(parseFloat(data.price * qty).toLocaleString('en-US'));
+                    $('#POS-field table tbody').append(tr);
+                    calc();
+                    tr.find('[name="qty[]"]').on('input keypress keyup keydown', function() {
+                        calc();
+                    });
+                    tr.find('.rem-item').click(function() {
+                        if (confirm("Est sûr de supprimer " + data.name + " de la Liste?") == true) {
+                            tr.remove();
+                            calc();
+                        }
+                    });
+                }
+                $('#product-id').val('').trigger('change');
+                $('#product-qty').val(1);
+            } else {
+                alert("Produit non défini");
+            }
+        }
+    
+        // Event listener for barcode input
+        $('#code-bar').on('input', function() {
+            var barcode = $(this).val().trim();
+            if (barcode.length > 0) {
+                // Check if the barcode matches any product ID
+                if (prod_arr[barcode]) {
+                    addProductToTable(barcode, 1); // Add product with quantity 1
+                    $(this).val(''); // Clear the barcode input field
+                } else {
+                    alert("Produit non trouvé pour le code-barres scanné.");
+                }
+            }
+        });
+    
+        // Existing code for manual product addition
         $('#add_item').click(function() {
             var id = $('#product-id').val();
             var qty = $('#product-qty').val();
@@ -169,41 +227,14 @@
                 alert("Le produit et la quantité sont requis!");
                 return false;
             }
-            if (!!prod_arr[id]) {
-                if ($('#POS-field table tbody input[name="product[]"][value="' + id + '"]').length > 0) {
-                    alert("L'article est déjà sur la liste.");
-                    return false;
-                }
-                var data = prod_arr[id];
-                var tr = $($('noscript#item-clone').html()).clone();
-                tr.find('[name="qty[]"]').val(qty);
-                tr.find('[name="product[]"]').val(id);
-                tr.find('[name="price[]"]').val(data.price);
-                tr.find('.product_name').text(data.name);
-                tr.find('.product_price').text(parseFloat(data.price).toLocaleString('en-US'));
-                tr.find('.product_total').text(parseFloat(data.price * qty).toLocaleString('en-US'));
-                $('#POS-field table tbody').append(tr);
-                $('#product-id').val('').trigger('change');
-                $('#product-qty').val(1);
-                calc();
-                tr.find('[name="qty[]"]').on('input keypress keyup keydown', function() {
-                    calc();
-                });
-                tr.find('.rem-item').click(function() {
-                    if (confirm("Est sûr de supprimer" + data.name + " de la Liste?") == true) {
-                        tr.remove();
-                        calc();
-                    }
-                });
-            } else {
-                alert("Produit non défini");
-            }
+            addProductToTable(id, qty);
         });
-
+    
+        // Existing code for tax calculation and form submission
         $('[name="tax"]').on('input keypress keydown keyup', function() {
             calc();
         });
-
+    
         $('#check_out').click(function() {
             if ($('#POS-field table tbody tr').length <= 0) {
                 alert("Primero, agregue al menos 1 producto!");
@@ -211,7 +242,7 @@
             }
             uni_modal("Verificar", "{% url 'pos:checkout-modal' %}?grand_total=" + $('[name="grand_total"]').val());
         });
-
+    
         $('#pos-form').submit(function(e) {
             e.preventDefault();
             var _this = $(this);
