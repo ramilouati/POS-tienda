@@ -1,3 +1,4 @@
+from venv import logger
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
@@ -5,8 +6,8 @@ from django.views import generic
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 
-from .models import Supplier, PurchaseProduct
-from .forms import SupplierForm, PurchaseForm
+from .models import Supplier, PurchaseProduct,Client
+from .forms import SupplierForm, PurchaseForm,ClientForm
 from inventory.models import Products 
 
 from django.core.exceptions import ValidationError
@@ -61,7 +62,60 @@ class SupplierDelete(LoginRequiredMixin, SuccessMessageMixin, PermissionRequired
         success_message = f"Proveedor '{supplier_name}' eliminado exitosamente."
         messages.success(self.request, success_message)
         return self.delete(request, *args, **kwargs)
+
+#client
+class ClientList(LoginRequiredMixin, PermissionRequiredMixin, generic.ListView):
+    model = Client
+    template_name ='purchases/client_list.html'
+    context_object_name = 'clients'
+    permission_required = 'purchase.view_client'
     
+class ClientCreate(LoginRequiredMixin, PermissionRequiredMixin, generic.CreateView):
+    model = Client
+    form_class = ClientForm  
+    template_name = 'purchases/client_create.html'
+    success_url = reverse_lazy('purchase:client_list')
+    permission_required = 'purchase.add_client'
+    
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        client_name = form.instance.name
+        messages.success(self.request, f"Client '{client_name}'créé avec succès.")
+        return response
+
+    def form_invalid(self, form):
+        logger.error("Error creating client: %s", form.errors)
+        messages.error(self.request, "Il y a eu une erreur lors de la création du client.Veuillez réessayer.")
+        return self.render_to_response(self.get_context_data(form=form))
+    
+    
+class ClientUpdate(LoginRequiredMixin, PermissionRequiredMixin, generic.UpdateView):
+    model = Client
+    form_class = ClientForm  
+    template_name = 'purchases/client_update.html'
+    success_url = reverse_lazy('purchase:client_list')
+    permission_required = 'purchase.change_client'
+    
+    def form_valid(self, form):
+        client_name = self.get_object().name
+        response = super().form_valid(form)
+        messages.success(self.request, f"Client '{client_name}' mis à jour avec succès.")
+        return response
+    
+class ClientDelete(LoginRequiredMixin, SuccessMessageMixin, PermissionRequiredMixin, generic.DeleteView):
+    model = Client
+    template_name = 'purchases/client_delete.html'
+    success_url = reverse_lazy('purchase:client_list')
+    permission_required = 'purchase.delete_client'
+    
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        client_name = self.object.name
+        success_message = f"Client '{client_name}' éliminé avec succès."
+        messages.success(self.request, success_message)
+        return self.delete(request, *args, **kwargs)
+
+
 class PurchaseList(LoginRequiredMixin,PermissionRequiredMixin, generic.ListView):
     model = PurchaseProduct
     template_name = 'purchases/purchase_list.html'

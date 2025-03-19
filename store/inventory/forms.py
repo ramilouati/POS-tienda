@@ -53,7 +53,7 @@ class CategoryForm(forms.ModelForm):
 class ProductsForm(forms.ModelForm):
     class Meta:
         model = Products
-        fields = ['code', 'category', 'name', 'description', 'price', 'status']
+        fields = ['code', 'category', 'name', 'description', 'price', 'status','taxpercentage']
         labels = {
             'code': 'Código',
             'category': 'Categoría',
@@ -63,6 +63,7 @@ class ProductsForm(forms.ModelForm):
             'status': 'Estado',
             'cost': 'Costo',
             'quantity': 'Cantidad',
+            'taxpercentage': 'Pourcentage de TVA'
         }
         widgets = {
             'code': forms.TextInput(attrs={
@@ -85,6 +86,11 @@ class ProductsForm(forms.ModelForm):
                 'class': 'form-control',
                 'placeholder': 'Ingrese el precio del producto',
                 'step': '0.01',
+            }),
+                    'taxpercentage': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'TVA',
+                'step': '1.00',
             }),
             'status': forms.Select(attrs={
                 'class': 'form-control',
@@ -113,6 +119,10 @@ class ProductsForm(forms.ModelForm):
                 'required': 'Este campo es obligatorio.',
             },
             'price': {
+                'required': 'Este campo es obligatorio.',
+                'invalid': 'Ingrese un precio válido.',
+            },
+                     'taxpercentage': {
                 'required': 'Este campo es obligatorio.',
                 'invalid': 'Ingrese un precio válido.',
             },

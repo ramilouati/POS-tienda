@@ -1,5 +1,5 @@
 from django import forms
-from .models import Supplier, PurchaseProduct
+from .models import Supplier, PurchaseProduct,Client
 from inventory.models import *
 
 from django.core.exceptions import ValidationError
@@ -32,7 +32,35 @@ class SupplierForm(forms.ModelForm):
                 'max_length': 'La información de contacto no puede exceder los 200 caracteres.',
             },
         }
-
+class ClientForm(forms.ModelForm):
+    class Meta:
+        model = Client
+        fields = ['name', 'contact_info']
+        labels = {
+            'name': 'Noms et noms de famille (personne / entreprise) ',
+            'contact_info': 'Informations sur les clients',
+        }
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Noms et nom de famille / Empresa S.A.   ',
+            }),
+            'contact_info': forms.Textarea(attrs={
+                'class': 'form-control',
+                'placeholder': 'Entrez des informations:  Adresse  and Téléphone   item  etc',
+                'rows': 6,  
+            }),
+        }
+        error_messages = {
+            'name': {
+                'required': 'Le nom du client est obligatoire.',
+                'max_length': 'Le nom ne peut pas dépasser 100 caractères.',
+            },
+            'contact_info': {
+                'required': 'Les coordonnées sont obligatoires.',
+                'max_length': 'Les coordonnées ne peuvent pas dépasser 200 caracteres.',
+            },
+        }
 class PurchaseForm(forms.ModelForm):
     class Meta:
         model = PurchaseProduct

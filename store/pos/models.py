@@ -22,12 +22,12 @@ class Sales(models.Model):
     cliente = models.CharField(max_length=100, blank=True)  
 
     def save(self, *args, **kwargs):
-        if not self.pk or self.cliente == "Cliente 1": 
+        # if not self.pk or self.cliente == "Cliente 1": 
             
-            ventas_hoy = Sales.objects.filter(date_added__date=timezone.now().date()).count()
+        #     ventas_hoy = Sales.objects.filter(date_added__date=timezone.now().date()).count()
             
-            self.cliente = f"Cliente {ventas_hoy + 1}"
-            print("Cliente:", self.cliente) 
+        #     self.cliente = f"Cliente {ventas_hoy + 1}"
+        #     print("Cliente:", self.cliente) 
         super().save(*args, **kwargs)
     
     def __str__(self):

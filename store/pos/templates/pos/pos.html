@@ -15,9 +15,19 @@
                 <legend>Ajouter le produit </legend>
                 <div class="row align-items-end">
                     <div class="col-lg-5 col-md-5 col-sm-12">
+                        <div class="form-group mb-3">
+                            <label for="client-id">Sélectionner le client</label>
+                            <select id="client-id" class="form-select form-select-sm">
+                                <option value="" disabled selected></option>
+                                {% for client in clients %}
+                                    <option value="{{ client.pk }}"> {{ client }}</option>
+                                {% endfor %}
+                            </select>
+                         </div> 
                         <div>
                             <input id="code-bar" class="form-control" placeholder="Scan barcode here" />
                         </div>
+            
                         <div class="form-group mb-3">
                             <label for="product-id">Sélectionner le produit</label>
                             <select id="product-id" class="form-select form-select-sm">
@@ -27,10 +37,11 @@
                                 {% endfor %}
                             </select>
                         </div>
+
                     </div>
                     <div class="col-lg-3 col-md-5 col-md-12">
                         <div class="form-group mb-3">
-                            <label for="product-qty">Montant</label>
+                            <label for="product-qty">Quantité</label>
                             <input type="number" class="form-control form-control-sm text-center" step="any" id="product-qty" value="1">
                         </div>
                     </div>
@@ -55,9 +66,10 @@
                             <thead>
                                 <tr class="bg-dark bg-gradient bg-opacity-50 text-light">
                                     <th class="py-1 px-2 text-center text-light"></th>
-                                    <th class="py-1 px-2 text-center text-light">Montant</th>
+                                    <th class="py-1 px-2 text-center text-light">Quantité</th>
                                     <th class="py-1 px-2 text-center text-light">Produit</th>
                                     <th class="py-1 px-2 text-center text-light">Prix</th>
+                                    <th class="py-1 px-2 text-center text-light">Tva</th>
                                     <th class="py-1 px-2 text-center text-light">Totale</th>
                                 </tr>
                             </thead>
@@ -67,27 +79,36 @@
                     </div>
                     <div class="col-4 bg-gradient bg-dark bg-opacity-50 border h-100">
                         <div class="col-12 py-4 px-2">
-                            <dl>
-                                <dt class="h4 fw-bold text-light">Sous-total</dt>
+
+                            <dl>      
+                                 {% comment %} <dt class="h4 fw-bold text-light">Sélectionner le client</dt>
+                                 <dd class="text-end py-1 px-2 rounded-0 bg-light">
+                                    <select id="client-id" class="form-select form-select-sm">
+                                        <option value="" disabled selected></option>
+                                        {% for client in clients %}
+                                            <option value="{{ client.pk }}"> {{ client }}</option>
+                                        {% endfor %}
+                                    </select>   </dd> {% endcomment %}
+                                <dt class="h5 fw text-light">Sous-total</dt>
                                 <dd class="text-end py-1 px-2 rounded-0 bg-light">
                                     <input type="hidden" name="sub_total" value="0">
-                                    <span class="h3 fw-bold" id="sub_total">0.00</span>
+                                    <span class="h4 fw" id="sub_total">0.00</span>
                                 </dd>
-                                <dt class="h4 fw-bold text-light " >Taxe inclusive (%)</dt>
+                                <dt class="h5 fw text-light " >Taxe inclusive (%)</dt>
                                 <dd>
                                     <input type="number" class="form-control form-control-lg rounded-0 text-end" step="any" min="0" max="100" name="tax" value="0" readonly>
                                 </dd>
-                                <dt class="h4 fw-bold text-light">Montant de l'impôt</dt>
+                                <dt class="h5 fw text-light">Montant de l'impôt</dt>
                                 <dd class="text-end py-1 px-2 rounded-0 bg-light">
                                     <input type="hidden" name="tax_amount" value="0">
-                                    <span class="h3 fw-bold" id="tax_amount">0.00</span>
+                                    <span class="h4 fw" id="tax_amount">0.00</span>
                                 </dd>
-                                <dt class="h4 fw-bold text-light">Total général</dt>
+                                <dt class="h5 fw text-light">Total général</dt>
                                 <dd class="text-end py-1 px-2 rounded-0 bg-light">
                                     <input type="hidden" name="grand_total" value="0">
                                     <input type="hidden" name="tendered_amount" value="0">
                                     <input type="hidden" name="amount_change" value="0">
-                                    <span class="h3 fw-bold" id="grand_total">0.00</span>
+                                    <span class="h4 fw" id="grand_total">0.00</span>
                                 </dd>
                             </dl>
                         </div>
@@ -110,10 +131,12 @@
         <td class="px-2 py-1">
             <input type="hidden" name="product[]">
             <input type="hidden" name="price[]">
+            <input type="hidden" name="taxpercentage[]">
             <input type="number" name="qty[]" min="0" class="form-control form-control-sm rounded-0 text-center">
         </td>
         <td class="px-2 py-1 product_name text-start"></td>
         <td class="px-2 py-1 product_price text-end"></td>
+        <td class="px-2 py-1 product_taxpercentage text-end"></td>
         <td class="px-2 py-1 product_total text-end"></td>
     </tr>
 </noscript>
@@ -183,8 +206,10 @@
                     tr.find('[name="qty[]"]').val(qty);
                     tr.find('[name="product[]"]').val(id);
                     tr.find('[name="price[]"]').val(data.price);
+                    tr.find('[name="taxpercentage[]"]').val(data.taxpercentage);
                     tr.find('.product_name').text(data.name);
                     tr.find('.product_price').text(parseFloat(data.price).toLocaleString('en-US'));
+                    tr.find('.product_taxpercentage').text(parseFloat(data.taxpercentage).toLocaleString('en-US'));
                     tr.find('.product_total').text(parseFloat(data.price * qty).toLocaleString('en-US'));
                     $('#POS-field table tbody').append(tr);
                     calc();
@@ -255,12 +280,14 @@
                 return false;
             }
             start_loader();
+            var formData = new FormData($(this)[0]);
+            formData.append('client_id', $('#client-id').val()); // Add client ID to form data
             $.ajax({
                 headers: {
                     "X-CSRFToken": '{{csrf_token}}'
                 },
                 url: "{% url 'pos:save-pos' %}",
-                data: new FormData($(this)[0]),
+                data: formData,
                 cache: false,
                 contentType: false,
                 processData: false,

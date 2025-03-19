@@ -1,6 +1,8 @@
 from django.shortcuts import get_object_or_404, render
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.decorators import login_required
+
+from purchase.models import Client
 from .models import *
 from inventory.models import *
 from django.views.decorators.csrf import csrf_exempt
@@ -19,16 +21,22 @@ from django.db import transaction
 @permission_required('pos.view_sales', raise_exception=True)
 def pos(request):
     
-    
+    clients = Client.objects.all()
     products = Products.objects.filter(status=1).order_by('name')
     product_json = []
+    client_json = []
     for product in products:
-        product_json.append({'id': product.id, 'name': product.name, 'price': float(product.price)})
+        product_json.append({'id': product.id, 'name': product.name, 'price': float(product.price) , 'taxpercentage': product.taxpercentage})
+    for client in clients:
+        client_json.append({'id': client.id, 'name': client.name})
     context = {
         'page_title': "Point of Sale",
         'products': products,
-        'product_json': json.dumps(product_json)
+        'product_json': json.dumps(product_json),
+        'clients': clients,
+        'client_json': json.dumps(client_json),
     }
+    print(product_json)
     return render(request, 'pos/pos.html', context)
 
 @login_required
@@ -59,6 +67,15 @@ def save_pos(request):
     code = str(pref) + str(code)
 
     try:
+        # Fetch the client name from the form data
+        client_id = data.get('client_id')  # Ensure this matches the key sent from the frontend
+        if not client_id:
+            raise ValueError("Client ID is required.")
+
+        # Fetch the client instance
+        client = get_object_or_404(Client, id=client_id)
+
+        # Create the Sales instance with the client's name
         sales = Sales(
             code=code,
             sub_total=data['sub_total'],
@@ -66,7 +83,8 @@ def save_pos(request):
             tax_amount=data['tax_amount'],
             grand_total=data['grand_total'],
             tendered_amount=data['tendered_amount'],
-            amount_change=data['amount_change']
+            amount_change=data['amount_change'],
+            cliente=client.name,  # Store the client's name as a string
         )
         sales.save()
 
