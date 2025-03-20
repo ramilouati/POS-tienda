@@ -1,149 +1,145 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% load static %}
 {% block pageContent %}
-<div class="mdc-layout-grid__cell stretch-card mdc-layout-grid__cell--span-12">
+  <div class="mdc-layout-grid__cell stretch-card mdc-layout-grid__cell--span-12">
     <div class="mdc-card py-2">
-        <div class="d-flex justify-content-between align-items-center">
-            <h4 class="card-title mb-0">Point de vente</h4>
-        </div>
+      <div class="d-flex justify-content-between align-items-center">
+        <h4 class="card-title mb-0">Point de vente</h4>
+      </div>
     </div>
-</div>
-<div class="mdc-layout-grid__cell stretch-card mdc-layout-grid__cell--span-12">
+  </div>
+  <div class="mdc-layout-grid__cell stretch-card mdc-layout-grid__cell--span-12">
     <div class="mdc-card">
-        <form action="" id="pos-form">
-            <fieldset>
-                <legend>Ajouter le produit </legend>
-                <div class="row align-items-end">
-                    <div class="col-lg-5 col-md-5 col-sm-12">
-                        <div class="form-group mb-3">
-                            <label for="client-id">Sélectionner le client</label>
-                            <select id="client-id" class="form-select form-select-sm">
-                                <option value="" disabled selected></option>
-                                {% for client in clients %}
-                                    <option value="{{ client.pk }}"> {{ client }}</option>
-                                {% endfor %}
-                            </select>
-                         </div> 
-                        <div>
-                            <input id="code-bar" class="form-control" placeholder="Scan barcode here" />
-                        </div>
-            
-                        <div class="form-group mb-3">
-                            <label for="product-id">Sélectionner le produit</label>
-                            <select id="product-id" class="form-select form-select-sm">
-                                <option value="" disabled selected></option>
-                                {% for product in products %}
-                                    <option value="{{ product.pk }}"> {{ product.code }} -{{ product }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
+      <form action="" id="pos-form">
+        <fieldset>
+          <legend>Ajouter le produit</legend>
+          <div class="row align-items-end">
+            <div class="col-lg-5 col-md-5 col-sm-12">
+              <div class="form-group mb-3">
+                <label for="client-id">Sélectionner le client</label>
+                <select id="client-id" class="form-select form-select-sm">
+                  <option value="" disabled selected></option>
+                  {% for client in clients %}
+                    <option value="{{ client.pk }}">{{ client }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div>
+                <input id="code-bar" class="form-control" placeholder="Scan barcode here" />
+              </div>
 
-                    </div>
-                    <div class="col-lg-3 col-md-5 col-md-12">
-                        <div class="form-group mb-3">
-                            <label for="product-qty">Quantité</label>
-                            <input type="number" class="form-control form-control-sm text-center" step="any" id="product-qty" value="1">
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-2 col-md-12">
-                        <div class="form-group mb-3">
-                            <button class="btn btn-light btn-sm bg-gradient border rounded-0 text-start" type="button" id="add_item"><i class="mdi mdi-plus"></i> Ajouter</button>
-                        </div>
-                    </div>
-                </div>
-            </fieldset>
-            <fieldset>
-                <div class="d-flex w-100" id="POS-field">
-                    <div class="col-8 bg-gradient bg-light border h-100">
-                        <table class="table table-bordered">
-                            <colgroup>
-                                <col width="5%">
-                                <col width="15%">
-                                <col width="40%">
-                                <col width="20%">
-                                <col width="20%">
-                            </colgroup>
-                            <thead>
-                                <tr class="bg-dark bg-gradient bg-opacity-50 text-light">
-                                    <th class="py-1 px-2 text-center text-light"></th>
-                                    <th class="py-1 px-2 text-center text-light">Quantité</th>
-                                    <th class="py-1 px-2 text-center text-light">Produit</th>
-                                    <th class="py-1 px-2 text-center text-light">Prix</th>
-                                    <th class="py-1 px-2 text-center text-light">Tva</th>
-                                    <th class="py-1 px-2 text-center text-light">Totale</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="col-4 bg-gradient bg-dark bg-opacity-50 border h-100">
-                        <div class="col-12 py-4 px-2">
-
-                            <dl>      
-                                 {% comment %} <dt class="h4 fw-bold text-light">Sélectionner le client</dt>
-                                 <dd class="text-end py-1 px-2 rounded-0 bg-light">
-                                    <select id="client-id" class="form-select form-select-sm">
-                                        <option value="" disabled selected></option>
-                                        {% for client in clients %}
-                                            <option value="{{ client.pk }}"> {{ client }}</option>
-                                        {% endfor %}
-                                    </select>   </dd> {% endcomment %}
-                                <dt class="h5 fw text-light">Sous-total</dt>
-                                <dd class="text-end py-1 px-2 rounded-0 bg-light">
-                                    <input type="hidden" name="sub_total" value="0">
-                                    <span class="h4 fw" id="sub_total">0.00</span>
-                                </dd>
-                                <dt class="h5 fw text-light " >Taxe inclusive (%)</dt>
-                                <dd>
-                                    <input type="number" class="form-control form-control-lg rounded-0 text-end" step="any" min="0" max="100" name="tax" value="0" readonly>
-                                </dd>
-                                <dt class="h5 fw text-light">Montant de l'impôt</dt>
-                                <dd class="text-end py-1 px-2 rounded-0 bg-light">
-                                    <input type="hidden" name="tax_amount" value="0">
-                                    <span class="h4 fw" id="tax_amount">0.00</span>
-                                </dd>
-                                <dt class="h5 fw text-light">Total général</dt>
-                                <dd class="text-end py-1 px-2 rounded-0 bg-light">
-                                    <input type="hidden" name="grand_total" value="0">
-                                    <input type="hidden" name="tendered_amount" value="0">
-                                    <input type="hidden" name="amount_change" value="0">
-                                    <span class="h4 fw" id="grand_total">0.00</span>
-                                </dd>
-                            </dl>
-                        </div>
-                    </div>
-                </div>
-            </fieldset>
-            <div class="row">
-                <div class="col-md-12 text-end">
-                    <button class="btn btn-primary btn-sm rounded-0" type="button" id="check_out"><i class="mdi mdi-save"></i> Processus</button>
-                </div>
+              <div class="form-group mb-3">
+                <label for="product-id">Sélectionner le produit</label>
+                <select id="product-id" class="form-select form-select-sm">
+                  <option value="" disabled selected></option>
+                  {% for product in products %}
+                    <option value="{{ product.pk }}">{{ product.code }} -{{ product }}</option>
+                  {% endfor %}
+                </select>
+              </div>
             </div>
-        </form>
+            <div class="col-lg-3 col-md-5 col-md-12">
+              <div class="form-group mb-3">
+                <label for="product-qty">Quantité</label>
+                <input type="number" class="form-control form-control-sm text-center" step="any" id="product-qty" value="1" />
+              </div>
+            </div>
+            <div class="col-lg-4 col-md-2 col-md-12">
+              <div class="form-group mb-3">
+                <button class="btn btn-light btn-sm bg-gradient border rounded-0 text-start" type="button" id="add_item"><i class="mdi mdi-plus"></i> Ajouter</button>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+        <fieldset>
+          <div class="d-flex w-100" id="POS-field">
+            <div class="col-8 bg-gradient bg-light border h-100">
+              <table class="table table-bordered">
+                <colgroup>
+                  <col width="5%" />
+                  <col width="15%" />
+                  <col width="40%" />
+                  <col width="20%" />
+                  <col width="20%" />
+                </colgroup>
+                <thead>
+                  <tr class="bg-dark bg-gradient bg-opacity-50 text-light">
+                    <th class="py-1 px-2 text-center text-light"></th>
+                    <th class="py-1 px-2 text-center text-light">Quantité</th>
+                    <th class="py-1 px-2 text-center text-light">Produit</th>
+                    <th class="py-1 px-2 text-center text-light">Prix HT</th>
+                    <th class="py-1 px-2 text-center text-light">Tva</th>
+                    <th class="py-1 px-2 text-center text-light">Totale TTC</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <div class="col-4 bg-gradient bg-dark bg-opacity-50 border h-100">
+              <div class="col-12 py-4 px-2">
+                <dl>
+                  {% comment %} <dt class="h4 fw-bold text-light">Sélectionner le client</dt>
+                  <dd class="text-end py-1 px-2 rounded-0 bg-light">
+                    <select id="client-id" class="form-select form-select-sm">
+                      <option value="" disabled selected></option>
+                      {% for client in clients %}
+                        <option value="{{ client.pk }}">{{ client }}</option>
+                      {% endfor %}
+                    </select>
+                  </dd> {% endcomment %}
+                  <dt class="h5 fw text-light">Sous-total HT</dt>
+                  <dd class="text-end py-1 px-2 rounded-0 bg-light">
+                    <input type="hidden" name="sub_total" value="0" />
+                    <span class="h4 fw" id="sub_total">0.00</span>
+                  </dd>
+                  <dt class="h5 fw text-light">Taxe inclusive (%)</dt>
+                  <dd><input type="number" class="form-control form-control-lg rounded-0 text-end" step="any" min="0" max="100" name="tax" value="0" readonly /></dd>
+                  <dt  hidden class="h5 fw text-light">Montant de l'impôt</dt>
+                  <dd  hidden class="text-end py-1 px-2 rounded-0 bg-light">
+                    <input type="hidden" name="tax_amount" value="0" />
+                    <span hidden class="h4 fw" id="tax_amount">0.00</span>
+                  </dd>
+                  <dt class="h5 fw text-light">Total général</dt>
+                  <dd class="text-end py-1 px-2 rounded-0 bg-light">
+                    <input type="hidden" name="grand_total" value="0" />
+                    <input type="hidden" name="tendered_amount" value="0" />
+                    <input type="hidden" name="amount_change" value="0" />
+                    <span class="h4 fw" id="grand_total">0.00</span>
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+        <div class="row">
+          <div class="col-md-12 text-end">
+            <button class="btn btn-primary btn-sm rounded-0" type="button" id="check_out"><i class="mdi mdi-save"></i> Processus</button>
+          </div>
+        </div>
+      </form>
     </div>
-</div>
-<noscript id="item-clone">
+  </div>
+  <noscript id="item-clone">
     <tr>
-        <td class="px-2 py-1 text-center">
-            <button class="btn btn-sm btn-outline-danger rounded-0 rem-item" type="button"><i class="mdi mdi-close"></i></button>
-        </td>
-        <td class="px-2 py-1">
-            <input type="hidden" name="product[]">
-            <input type="hidden" name="price[]">
-            <input type="hidden" name="taxpercentage[]">
-            <input type="number" name="qty[]" min="0" class="form-control form-control-sm rounded-0 text-center">
-        </td>
-        <td class="px-2 py-1 product_name text-start"></td>
-        <td class="px-2 py-1 product_price text-end"></td>
-        <td class="px-2 py-1 product_taxpercentage text-end"></td>
-        <td class="px-2 py-1 product_total text-end"></td>
+      <td class="px-2 py-1 text-center">
+        <button class="btn btn-sm btn-outline-danger rounded-0 rem-item" type="button"><i class="mdi mdi-close"></i></button>
+      </td>
+      <td class="px-2 py-1">
+        <input type="hidden" name="product[]" />
+        <input type="hidden" name="price[]" />
+        <input type="hidden" name="taxpercentage[]" />
+        <input type="number" name="qty[]" min="0" class="form-control form-control-sm rounded-0 text-center" />
+      </td>
+      <td class="px-2 py-1 product_name text-start"></td>
+      <td class="px-2 py-1 product_price text-end"></td>
+      <td class="px-2 py-1 product_taxpercentage text-end"></td>
+      <td class="px-2 py-1 product_total text-end"></td>
     </tr>
-</noscript>
-{% endblock pageContent %}
+  </noscript>
+{% endblock %}
 
 {% block ScriptBlock %}
-<script>
+  <script>
     var product_json = '{{ product_json }}';
     if (product_json == "" || product_json == "{}") {
         product_json = {};
@@ -165,8 +161,9 @@
         $('#POS-field table tbody tr').each(function() {
             var price = $(this).find('[name="price[]"]').val();
             var qty = $(this).find('[name="qty[]"]').val();
+            var taxpercentage = $(this).find('[name="taxpercentage[]"]').val();
             qty = qty > 0 ? qty : 0;
-            var total = parseFloat(price) * parseFloat(qty);
+            var total = (parseFloat(price) * (1+ (parseFloat(taxpercentage)/100))) * parseFloat(qty);
             $(this).find('.product_total').text(parseFloat(total).toLocaleString('en-US'));
             sub_total += parseFloat(total);
         });
@@ -181,7 +178,6 @@
         $('#sub_total').text(parseFloat(sub_total).toLocaleString('en-US'));
         $('[name="sub_total"]').val(parseFloat(sub_total));
     }
-
     $(function() {
         // Initialize Select2
         $('#product-id').select2({
@@ -255,11 +251,42 @@
             addProductToTable(id, qty);
         });
     
-        // Existing code for tax calculation and form submission
+        // Function to calculate totals
+        function calc() {
+            var sub_total = 0;
+            var grand_total = 0;
+            var total_tax = 0;
+    
+            $('#POS-field table tbody tr').each(function() {
+                var price = $(this).find('[name="price[]"]').val();
+                var qty = $(this).find('[name="qty[]"]').val();
+                var taxpercentage = $(this).find('[name="taxpercentage[]"]').val();
+                qty = qty > 0 ? qty : 0;
+                var total = parseFloat(price) * parseFloat(qty);
+                var tax_amount = total * (parseFloat(taxpercentage) / 100) ;
+                total_tax += tax_amount;
+                sub_total += total;
+                $(this).find('.product_total').text(parseFloat(total + tax_amount).toLocaleString('en-US'));
+            });
+    
+            grand_total = sub_total + total_tax;
+    
+            // Update tax and grand total fields
+            $('[name="tax"]').val(total_tax.toFixed(2));
+            $('#tax_amount').text(parseFloat(total_tax).toLocaleString('en-US'));
+            $('[name="tax_amount"]').val(parseFloat(total_tax));
+            $('#grand_total').text(parseFloat(grand_total).toLocaleString('en-US'));
+            $('[name="grand_total"]').val(parseFloat(grand_total));
+            $('#sub_total').text(parseFloat(sub_total).toLocaleString('en-US'));
+            $('[name="sub_total"]').val(parseFloat(sub_total));
+        }
+    
+        // Event listener for tax input
         $('[name="tax"]').on('input keypress keydown keyup', function() {
             calc();
         });
     
+        // Existing code for form submission
         $('#check_out').click(function() {
             if ($('#POS-field table tbody tr').length <= 0) {
                 alert("Primero, agregue al menos 1 producto!");
@@ -321,4 +348,4 @@
         });
     });
 </script>
-{% endblock ScriptBlock %}
+{% endblock %}

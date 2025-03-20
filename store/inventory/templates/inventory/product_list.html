@@ -49,8 +49,10 @@
             <th>Nom de produit</th>
             <th>Catégorie</th>
             <th>Coût</th>
-            <th>Montant</th>
+            <th>Quantité</th>
             <th>Précis</th>
+            <th>Tva %</th>
+            
             <th>État</th>
             <th>Dernière date de mise à jour</th>
             <th class="text-center">Actes</th>
@@ -73,7 +75,8 @@
               <td class="text-center">{{ product.cost }}</td>
               <td class="text-center">{{ product.quantity }}</td>
               <td class="text-center">{{ product.price }}</td>
-              
+              <td class="text-center">{{ product.taxpercentage }}</td>
+
               <td class="text-center">
                 {% if product.status == product.STATUS_ACTIVE %}
                     <span class="badge bg-success">Actif</span>
