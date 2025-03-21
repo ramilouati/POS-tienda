@@ -83,7 +83,8 @@ def save_pos(request):
             tax_amount=data['tax_amount'],
             grand_total=data['grand_total'],
             tendered_amount=data['tendered_amount'],
-            amount_change=data['amount_change'],
+            amount_change= data['amount_change'],
+            discount_amount= data['total_discount'],
             cliente=client.name,  # Store the client's name as a string
         )
         sales.save()
@@ -94,13 +95,18 @@ def save_pos(request):
             product = get_object_or_404(Products, id=prod_id)
             qty = data.getlist('qty[]')[i]
             price = data.getlist('price[]')[i]
+            discount = data.getlist('discount[]')[i]
             total = float(qty) * float(price)
+            totalDescounted = total - (total * (float(discount) / 100))
+
+            totalTax = totalDescounted * (1+(float(product.taxpercentage) / 100))
             sales_item = salesItems(
                 sale=sales,
                 product=product,
                 qty=qty,
                 price=price,
-                total=total
+                discount=discount,
+                total=totalTax
             )
             sales_item.save()
             i += 1
@@ -178,6 +184,7 @@ def create_sale(request):
             tax=0,
             tendered_amount=0,
             amount_change=0,
+            discount_amount=0
         )
 
         for item in items:
@@ -191,6 +198,9 @@ def create_sale(request):
         sale.sub_total = sum([item.total for item in sale.salesitems_set.all()])
         sale.tax_amount = sale.sub_total * (sale.tax / 100)
         sale.grand_total = sale.sub_total + sale.tax_amount
+        print("---------------")
+        print(sum([item.price * (item.discount / 100) for item in sale.salesitems_set.all()]))
+        sale.discount_amount = sum([item.price * (item.discount / 100) for item in sale.salesitems_set.all()])
         sale.save()
 
         return JsonResponse({"success": "Venta creada exitosamente."})
@@ -210,7 +220,7 @@ def receipt(request):
     ItemList = salesItems.objects.filter(sale=sales).all()
     
         # Cambiar el idioma a español para la fecha
-    with translation.override('es'):
+    with translation.override('fr-FR'):
         formatted_date = DateFormat(sales.date_added).format('d \de F Y')
     context = {
         "transaction": transaction,

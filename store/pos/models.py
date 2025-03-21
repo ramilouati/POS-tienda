@@ -13,6 +13,7 @@ class Sales(models.Model):
     sub_total = models.FloatField(default=0)
     grand_total = models.FloatField(default=0)
     tax_amount = models.FloatField(default=0)
+    discount_amount = models.FloatField(default=0)
     tax = models.FloatField(default=0)
     tendered_amount = models.FloatField(default=0)
     amount_change = models.FloatField(default=0)
@@ -40,6 +41,7 @@ class salesItems(models.Model):
     product = models.ForeignKey(Products,on_delete=models.CASCADE)
     price = models.FloatField(default=0)
     qty = models.IntegerField(default=0)
+    discount = models.FloatField(default=0)
     total = models.FloatField(default=0)
 
     def save(self, *args, **kwargs):

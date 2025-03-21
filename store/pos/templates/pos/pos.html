@@ -57,10 +57,11 @@
               <table class="table table-bordered">
                 <colgroup>
                   <col width="5%" />
-                  <col width="15%" />
-                  <col width="40%" />
-                  <col width="20%" />
-                  <col width="20%" />
+                  <col width="10%" />
+                  <col width="30%" />
+                  <col width="10%" />
+                  <col width="10%" />
+                  <col width="11%" />
                 </colgroup>
                 <thead>
                   <tr class="bg-dark bg-gradient bg-opacity-50 text-light">
@@ -69,6 +70,7 @@
                     <th class="py-1 px-2 text-center text-light">Produit</th>
                     <th class="py-1 px-2 text-center text-light">Prix HT</th>
                     <th class="py-1 px-2 text-center text-light">Tva</th>
+                    <th class="py-1 px-2 text-center text-light">Remise %</th> <!-- Nouvelle colonne -->
                     <th class="py-1 px-2 text-center text-light">Totale TTC</th>
                   </tr>
                 </thead>
@@ -92,7 +94,9 @@
                     <input type="hidden" name="sub_total" value="0" />
                     <span class="h4 fw" id="sub_total">0.00</span>
                   </dd>
-                  <dt class="h5 fw text-light">Taxe inclusive (%)</dt>
+
+
+                  <dt class="h5 fw text-light">Montant de TVA</dt>
                   <dd><input type="number" class="form-control form-control-lg rounded-0 text-end" step="any" min="0" max="100" name="tax" value="0" readonly /></dd>
                   <dt  hidden class="h5 fw text-light">Montant de l'impôt</dt>
                   <dd  hidden class="text-end py-1 px-2 rounded-0 bg-light">
@@ -104,6 +108,7 @@
                     <input type="hidden" name="grand_total" value="0" />
                     <input type="hidden" name="tendered_amount" value="0" />
                     <input type="hidden" name="amount_change" value="0" />
+                    <input type="hidden" id="total_discount" name="total_discount" value="0" />
                     <span class="h4 fw" id="grand_total">0.00</span>
                   </dd>
                 </dl>
@@ -133,219 +138,215 @@
       <td class="px-2 py-1 product_name text-start"></td>
       <td class="px-2 py-1 product_price text-end"></td>
       <td class="px-2 py-1 product_taxpercentage text-end"></td>
+      <td class="px-2 py-1">
+        <input type="number" name="discount[]" min="0" max="100" class="form-control form-control-sm rounded-0 text-center" value="0" />
+      </td>
       <td class="px-2 py-1 product_total text-end"></td>
     </tr>
   </noscript>
 {% endblock %}
 
 {% block ScriptBlock %}
-  <script>
-    var product_json = '{{ product_json }}';
-    if (product_json == "" || product_json == "{}") {
-        product_json = {};
-    } else {
-        product_json = product_json.replaceAll('&quot;', '"');
-        product_json = $.parseJSON(product_json);
-    }
+<script>
+  var product_json = '{{ product_json }}';
+  if (product_json == "" || product_json == "{}") {
+    product_json = {};
+  } else {
+    product_json = product_json.replace(/&quot;/g, '"'); // Use replace with regex for compatibility
+    product_json = $.parseJSON(product_json);
+  }
 
-    var prod_arr = {};
-    if (Object.keys(product_json).length > 0) {
-        Object.keys(product_json).map(k => {
-            prod_arr[product_json[k].id] = product_json[k];
-        });
-    }
-
-    function calc() {
-        var sub_total = 0;
-        var grand_total = 0;
-        $('#POS-field table tbody tr').each(function() {
-            var price = $(this).find('[name="price[]"]').val();
-            var qty = $(this).find('[name="qty[]"]').val();
-            var taxpercentage = $(this).find('[name="taxpercentage[]"]').val();
-            qty = qty > 0 ? qty : 0;
-            var total = (parseFloat(price) * (1+ (parseFloat(taxpercentage)/100))) * parseFloat(qty);
-            $(this).find('.product_total').text(parseFloat(total).toLocaleString('en-US'));
-            sub_total += parseFloat(total);
-        });
-
-        var tax = $('[name="tax"]').val();
-        tax = tax / 100;
-        var tax_amount = parseFloat(sub_total) * parseFloat(tax);
-        $('#tax_amount').text(parseFloat(tax_amount).toLocaleString('en-US'));
-        $('[name="tax_amount"]').val(parseFloat(tax_amount));
-        $('#grand_total').text(parseFloat(sub_total).toLocaleString('en-US'));
-        $('[name="grand_total"]').val(parseFloat(sub_total));
-        $('#sub_total').text(parseFloat(sub_total).toLocaleString('en-US'));
-        $('[name="sub_total"]').val(parseFloat(sub_total));
-    }
-    $(function() {
-        // Initialize Select2
-        $('#product-id').select2({
-            placeholder: "Veuillez sélectionner votre produit",
-            width: '100%'
-        });
-    
-        // Function to add product to table or update quantity if it already exists
-        function addProductToTable(id, qty) {
-            if (!!prod_arr[id]) {
-                var existingRow = $('#POS-field table tbody input[name="product[]"][value="' + id + '"]').closest('tr');
-                if (existingRow.length > 0) {
-                    // Product already exists in the table, increment the quantity
-                    var currentQty = parseInt(existingRow.find('[name="qty[]"]').val());
-                    var newQty = currentQty + qty;
-                    existingRow.find('[name="qty[]"]').val(newQty);
-                    calc(); // Recalculate totals
-                } else {
-                    // Product does not exist in the table, add a new row
-                    var data = prod_arr[id];
-                    var tr = $($('noscript#item-clone').html()).clone();
-                    tr.find('[name="qty[]"]').val(qty);
-                    tr.find('[name="product[]"]').val(id);
-                    tr.find('[name="price[]"]').val(data.price);
-                    tr.find('[name="taxpercentage[]"]').val(data.taxpercentage);
-                    tr.find('.product_name').text(data.name);
-                    tr.find('.product_price').text(parseFloat(data.price).toLocaleString('en-US'));
-                    tr.find('.product_taxpercentage').text(parseFloat(data.taxpercentage).toLocaleString('en-US'));
-                    tr.find('.product_total').text(parseFloat(data.price * qty).toLocaleString('en-US'));
-                    $('#POS-field table tbody').append(tr);
-                    calc();
-                    tr.find('[name="qty[]"]').on('input keypress keyup keydown', function() {
-                        calc();
-                    });
-                    tr.find('.rem-item').click(function() {
-                        if (confirm("Est sûr de supprimer " + data.name + " de la Liste?") == true) {
-                            tr.remove();
-                            calc();
-                        }
-                    });
-                }
-                $('#product-id').val('').trigger('change');
-                $('#product-qty').val(1);
-            } else {
-                alert("Produit non défini");
-            }
-        }
-    
-        // Event listener for barcode input
-        $('#code-bar').on('input', function() {
-            var barcode = $(this).val().trim();
-            if (barcode.length > 0) {
-                // Check if the barcode matches any product ID
-                if (prod_arr[barcode]) {
-                    addProductToTable(barcode, 1); // Add product with quantity 1
-                    $(this).val(''); // Clear the barcode input field
-                } else {
-                    alert("Produit non trouvé pour le code-barres scanné.");
-                }
-            }
-        });
-    
-        // Existing code for manual product addition
-        $('#add_item').click(function() {
-            var id = $('#product-id').val();
-            var qty = $('#product-qty').val();
-            if (id == '' || qty == '' || id == null || qty == null) {
-                alert("Le produit et la quantité sont requis!");
-                return false;
-            }
-            addProductToTable(id, qty);
-        });
-    
-        // Function to calculate totals
-        function calc() {
-            var sub_total = 0;
-            var grand_total = 0;
-            var total_tax = 0;
-    
-            $('#POS-field table tbody tr').each(function() {
-                var price = $(this).find('[name="price[]"]').val();
-                var qty = $(this).find('[name="qty[]"]').val();
-                var taxpercentage = $(this).find('[name="taxpercentage[]"]').val();
-                qty = qty > 0 ? qty : 0;
-                var total = parseFloat(price) * parseFloat(qty);
-                var tax_amount = total * (parseFloat(taxpercentage) / 100) ;
-                total_tax += tax_amount;
-                sub_total += total;
-                $(this).find('.product_total').text(parseFloat(total + tax_amount).toLocaleString('en-US'));
-            });
-    
-            grand_total = sub_total + total_tax;
-    
-            // Update tax and grand total fields
-            $('[name="tax"]').val(total_tax.toFixed(2));
-            $('#tax_amount').text(parseFloat(total_tax).toLocaleString('en-US'));
-            $('[name="tax_amount"]').val(parseFloat(total_tax));
-            $('#grand_total').text(parseFloat(grand_total).toLocaleString('en-US'));
-            $('[name="grand_total"]').val(parseFloat(grand_total));
-            $('#sub_total').text(parseFloat(sub_total).toLocaleString('en-US'));
-            $('[name="sub_total"]').val(parseFloat(sub_total));
-        }
-    
-        // Event listener for tax input
-        $('[name="tax"]').on('input keypress keydown keyup', function() {
-            calc();
-        });
-    
-        // Existing code for form submission
-        $('#check_out').click(function() {
-            if ($('#POS-field table tbody tr').length <= 0) {
-                alert("Primero, agregue al menos 1 producto!");
-                return false;
-            }
-            uni_modal("Verificar", "{% url 'pos:checkout-modal' %}?grand_total=" + $('[name="grand_total"]').val());
-        });
-    
-        $('#pos-form').submit(function(e) {
-            e.preventDefault();
-            var _this = $(this);
-            $('.err-msg').remove();
-            var el = $('<div>');
-            el.addClass("alert alert-danger err-msg");
-            el.hide();
-            if (_this[0].checkValidity() == false) {
-                _this[0].reportValidity();
-                return false;
-            }
-            start_loader();
-            var formData = new FormData($(this)[0]);
-            formData.append('client_id', $('#client-id').val()); // Add client ID to form data
-            $.ajax({
-                headers: {
-                    "X-CSRFToken": '{{csrf_token}}'
-                },
-                url: "{% url 'pos:save-pos' %}",
-                data: formData,
-                cache: false,
-                contentType: false,
-                processData: false,
-                method: 'POST',
-                type: 'POST',
-                dataType: 'json',
-                error: err => {
-                    console.log(err);
-                    end_loader();
-                },
-                success: function(resp) {
-                    if (typeof resp == 'object' && resp.status == 'success') {
-                        el.removeClass("alert alert-danger err-msg");
-                        uni_modal("Recibo", "{% url 'pos:receipt-modal' %}?id=" + resp.sale);
-                        $('#uni_modal').on('hide.bs.modal', function() {
-                            location.reload();
-                        });
-                    } else if (resp.status == 'failed' && !!resp.msg) {
-                        el.text(resp.msg);
-                    } else {
-                        el.text("An error occurred.");
-                        end_loader();
-                        console.error(resp);
-                    }
-                    _this.prepend(el);
-                    el.show('slow');
-                    $("html, body, .modal").scrollTop(0);
-                    end_loader();
-                }
-            });
-        });
+  var prod_arr = {};
+  if (Object.keys(product_json).length > 0) {
+    Object.keys(product_json).map(k => {
+      prod_arr[product_json[k].id] = product_json[k];
     });
+  }
+
+  function calc() {
+    var sub_total = 0;
+    var grand_total = 0;
+    var total_tax = 0;
+    var total_discount = 0;
+
+    $('#POS-field table tbody tr').each(function() {
+      var price = $(this).find('[name="price[]"]').val();
+      var qty = $(this).find('[name="qty[]"]').val();
+      var taxpercentage = $(this).find('[name="taxpercentage[]"]').val();
+      var discount = $(this).find('[name="discount[]"]').val();
+      qty = qty > 0 ? qty : 0;
+      discount = discount > 0 ? discount : 0;
+
+      var total = parseFloat(price) * parseFloat(qty);
+      var discount_amount = total * (parseFloat(discount) / 100);
+      total -= discount_amount; // Apply discount
+      var tax_amount = total * (parseFloat(taxpercentage) / 100);
+      total_tax += tax_amount;
+      total_discount +=discount_amount;
+
+      sub_total += total;
+      $(this).find('.product_total').text(parseFloat(total + tax_amount).toLocaleString('en-US'));
+    });
+
+    grand_total = sub_total + total_tax;
+
+    // Update tax and grand total fields
+    $('[name="tax"]').val(total_tax.toFixed(3));
+    $('#tax_amount').text(parseFloat(total_tax).toLocaleString('en-US'));
+    $('[name="tax_amount"]').val(parseFloat(total_tax));
+    $('#grand_total').text(parseFloat(grand_total).toLocaleString('en-US'));
+    $('[name="grand_total"]').val(parseFloat(grand_total));
+    $('#sub_total').text(parseFloat(sub_total).toLocaleString('en-US'));
+    $('[name="sub_total"]').val(parseFloat(sub_total));
+    $('[name="total_discount"]').val(parseFloat(total_discount));
+  }
+
+  $(function() {
+    // Initialize Select2
+    $('#product-id').select2({
+      placeholder: "Veuillez sélectionner votre produit",
+      width: '100%'
+    });
+
+    // Function to add product to table or update quantity if it already exists
+    function addProductToTable(id, qty) {
+      if (!!prod_arr[id]) {
+        var existingRow = $('#POS-field table tbody input[name="product[]"][value="' + id + '"]').closest('tr');
+        if (existingRow.length > 0) {
+          var currentQty = parseInt(existingRow.find('[name="qty[]"]').val());
+          var newQty = currentQty + qty;
+          existingRow.find('[name="qty[]"]').val(newQty);
+          calc();
+        } else {
+          var data = prod_arr[id];
+          var tr = $($('noscript#item-clone').html()).clone();
+          tr.find('[name="qty[]"]').val(qty);
+          tr.find('[name="product[]"]').val(id);
+          tr.find('[name="price[]"]').val(data.price);
+          tr.find('[name="taxpercentage[]"]').val(data.taxpercentage);
+          tr.find('[name="discount[]"]').val(0); // Initialize discount to 0
+          tr.find('.product_name').text(data.name);
+          tr.find('.product_price').text(parseFloat(data.price).toLocaleString('en-US'));
+          tr.find('.product_taxpercentage').text(parseFloat(data.taxpercentage).toLocaleString('en-US'));
+          tr.find('.product_total').text(parseFloat(data.price * qty).toLocaleString('en-US'));
+          $('#POS-field table tbody').append(tr);
+          calc();
+          tr.find('[name="qty[]"]').on('input keypress keyup keydown', function() {
+            calc();
+          });
+          tr.find('.rem-item').click(function() {
+            if (confirm("Est sûr de supprimer " + data.name + " de la Liste?") == true) {
+              tr.remove();
+              calc();
+            }
+          });
+        }
+        $('#product-id').val('').trigger('change');
+        $('#product-qty').val(1);
+      } else {
+        alert("Produit non défini");
+      }
+    }
+
+    // Event listener for barcode input
+    $('#code-bar').on('input', function() {
+      var barcode = $(this).val().trim();
+      if (barcode.length > 0) {
+        // Check if the barcode matches any product ID
+        if (prod_arr[barcode]) {
+          addProductToTable(barcode, 1); // Add product with quantity 1
+          $(this).val(''); // Clear the barcode input field
+        } else {
+          alert("Produit non trouvé pour le code-barres scanné.");
+        }
+      }
+    });
+
+    // Existing code for manual product addition
+    $('#add_item').click(function() {
+      var id = $('#product-id').val();
+      var qty = $('#product-qty').val();
+      if (id == '' || qty == '' || id == null || qty == null) {
+        alert("Le produit et la quantité sont requis!");
+        return false;
+      }
+      addProductToTable(id, qty);
+    });
+
+    // Event listener for discount input
+    $(document).on('input', '[name="discount[]"]', function() {
+      calc();
+    });
+
+    // Event listener for tax input
+    $('[name="tax"]').on('input keypress keydown keyup', function() {
+      calc();
+    });
+
+    // Existing code for form submission
+    $('#check_out').click(function() {
+      if ($('#POS-field table tbody tr').length <= 0) {
+        alert("Primero, agregue al menos 1 producto!");
+        return false;
+      }
+      uni_modal("Verificar", "{% url 'pos:checkout-modal' %}?grand_total=" + $('[name="grand_total"]').val());
+    });
+
+    $('#pos-form').submit(function(e) {
+      e.preventDefault();
+      var _this = $(this);
+      $('.err-msg').remove();
+      var el = $('<div>');
+      el.addClass("alert alert-danger err-msg");
+      el.hide();
+      if (_this[0].checkValidity() == false) {
+        _this[0].reportValidity();
+        return false;
+      }
+      start_loader();
+      var formData = new FormData($(this)[0]);
+      formData.append('client_id', $('#client-id').val());
+      formData.append('total_discount', $('#total_discount').val());
+      $('#POS-field table tbody tr').each(function(index) {
+        formData.append('discount[]', $(this).find('[name="discount[]"]').val());
+      });
+      $.ajax({
+        headers: {
+          "X-CSRFToken": '{{csrf_token}}'
+        },
+        url: "{% url 'pos:save-pos' %}",
+        data: formData,
+        cache: false,
+        contentType: false,
+        processData: false,
+        method: 'POST',
+        type: 'POST',
+        dataType: 'json',
+        error: err => {
+          console.log(err);
+          end_loader();
+        },
+        success: function(resp) {
+          if (typeof resp == 'object' && resp.status == 'success') {
+            el.removeClass("alert alert-danger err-msg");
+            uni_modal("Recibo", "{% url 'pos:receipt-modal' %}?id=" + resp.sale);
+            $('#uni_modal').on('hide.bs.modal', function() {
+              location.reload();
+            });
+          } else if (resp.status == 'failed' && !!resp.msg) {
+            el.text(resp.msg);
+          } else {
+            el.text("An error occurred.");
+            end_loader();
+            console.error(resp);
+          }
+          _this.prepend(el);
+          el.show('slow');
+          $("html, body, .modal").scrollTop(0);
+          end_loader();
+        }
+      });
+    });
+  }); // Closing brace for $(function() { ... });
 </script>
 {% endblock %}
