@@ -83,8 +83,8 @@ def save_pos(request):
             tax_amount=data['tax_amount'],
             grand_total=data['grand_total'],
             tendered_amount=data['tendered_amount'],
-            amount_change= data['amount_change'],
-            discount_amount= data['total_discount'],
+            amount_change= "{:.3f}".format(float(data['amount_change'])),
+            discount_amount = "{:.3f}".format(float(data['total_discount'])),
             cliente=client.name,  # Store the client's name as a string
         )
         sales.save()
@@ -99,7 +99,7 @@ def save_pos(request):
             total = float(qty) * float(price)
             totalDescounted = total - (total * (float(discount) / 100))
 
-            totalTax = totalDescounted * (1+(float(product.taxpercentage) / 100))
+            totalTax = "{:.3f}".format(totalDescounted * (1+(float(product.taxpercentage) / 100)))
             sales_item = salesItems(
                 sale=sales,
                 product=product,
@@ -113,7 +113,7 @@ def save_pos(request):
 
         resp['status'] = 'success'
         resp['sale'] = sale_id
-        messages.success(request, "La venta fue registrada.")
+        messages.success(request, "La vente à été enregistrée.")
     except Exception as e:
         resp['msg'] = "An error occurred: " + str(e)
 
@@ -221,7 +221,7 @@ def receipt(request):
     
         # Cambiar el idioma a español para la fecha
     with translation.override('fr-FR'):
-        formatted_date = DateFormat(sales.date_added).format('d \de F Y')
+        formatted_date = DateFormat(sales.date_added).format(r'd-m-Y')
     context = {
         "transaction": transaction,
         "salesItems": ItemList,

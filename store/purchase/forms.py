@@ -66,31 +66,31 @@ class PurchaseForm(forms.ModelForm):
         model = PurchaseProduct
         fields = ['supplier', 'product','cost','qty']
         labels = {
-            'supplier': 'Proveedor',
-            'product': 'Productos',
-            'cost': 'Costo',
-            'qty':'Cantidad',
+            'supplier': 'Fournisseur',
+            'product': 'Produit',
+            'cost': 'Cout',
+            'qty':'Quantité',
         }
         widgets = {
             'supplier': forms.Select(attrs={'class': 'form-control'}),
             'product': forms.Select(attrs={'class': 'form-control'}),
             'cost': forms.NumberInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Ingrese el monto total',
+                'placeholder': 'Entrez le montant total',
             }),
             'qty': forms.NumberInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Ingrese el monto total',
+                'placeholder': 'Entrez le montant total',
             }),
         }
         error_messages = {
             'qty': {
                 'required': 'El cantidad es obligatorio.',
-                'invalid': 'Ingrese un cantidad válida.',
+                'invalid': 'Entrez une quantité valide.',
             },
             'cost':{
                 'required': 'El costo debe tener 8 decimales.',
-                'invalid': 'Ingrese un monto válido.',
+                'invalid': 'Entrez un montant valide.',
             }
         }
         

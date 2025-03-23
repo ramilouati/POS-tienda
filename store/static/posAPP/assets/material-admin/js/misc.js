@@ -4,71 +4,75 @@
     var sidebar = $('.mdc-drawer-menu');
     var body = $('body');
 
-    if($('.mdc-drawer').length) {
+    // Initialize the Material Design drawer
+    if ($('.mdc-drawer').length) {
       var drawer = mdc.drawer.MDCDrawer.attachTo(document.querySelector('.mdc-drawer'));
-      // toggler icon click function
+
+      // Toggle drawer on sidebar-toggler click
       document.querySelector('.sidebar-toggler').addEventListener('click', function () {
         drawer.open = !drawer.open;
       });
     }
 
-    // Initially collapsed drawer in below desktop
-    if(window.matchMedia('(max-width: 991px)').matches) {
-      if(document.querySelector('.mdc-drawer.mdc-drawer--dismissible').classList.contains('mdc-drawer--open')) {
-        document.querySelector('.mdc-drawer.mdc-drawer--dismissible').classList.remove('mdc-drawer--open'); 
+    // Collapse drawer for smaller screens
+    if (window.matchMedia('(max-width: 991px)').matches) {
+      if (document.querySelector('.mdc-drawer.mdc-drawer--dismissible').classList.contains('mdc-drawer--open')) {
+        document.querySelector('.mdc-drawer.mdc-drawer--dismissible').classList.remove('mdc-drawer--open');
       }
     }
 
-    //Add active class to nav-link based on url dynamically
-    //Active class can be hard coded directly in html file also as required
-    var current = location.pathname.split("/").slice(-1)[0].replace(/^\/|\/$/g, '');
+    // Add active class to nav-link based on URL dynamically
+    var currentPath = window.location.pathname.replace(/^\/|\/$/g, ''); // Current path without leading/trailing slashes
+
+    // Iterate through all sidebar links
     $('.mdc-drawer-item .mdc-drawer-link', sidebar).each(function () {
       var $this = $(this);
-      if (current === "") {
-        //for root url
-        if ($this.attr('href').indexOf("index.html") !== -1) {
-          $(this).addClass('active');
-          if ($(this).parents('.mdc-expansion-panel').length) {
-            $(this).closest('.mdc-expansion-panel').addClass('expanded');
+      var linkPath = $this[0].pathname.replace(/^\/|\/$/g, ''); // Path of the current link
+
+      if (currentPath === "") {
+        // For root URL (index.html)
+        if (linkPath.endsWith("index.html")) {
+          $this.addClass('active');
+          if ($this.parents('.mdc-expansion-panel').length) {
+            $this.closest('.mdc-expansion-panel').addClass('expanded');
           }
         }
       } else {
-        //for other url
-        if ($this.attr('href').indexOf(current) !== -1) {
-          $(this).addClass('active');
-          if ($(this).parents('.mdc-expansion-panel').length) {
-            $(this).closest('.mdc-expansion-panel').addClass('expanded'); 
-            $(this).closest('.mdc-expansion-panel').show();
+        // Match exact path
+        if (currentPath === linkPath) {
+          $this.addClass('active');
+          if ($this.parents('.mdc-expansion-panel').length) {
+            $this.closest('.mdc-expansion-panel').addClass('expanded');
+            $this.closest('.mdc-expansion-panel').show();
           }
         }
       }
     });
 
-    // Toggle Sidebar items
+    // Toggle sidebar items
     $('[data-toggle="expansionPanel"]').on('click', function () {
-      // close other items
+      // Close other items
       $('.mdc-expansion-panel').not($('#' + $(this).attr("data-target"))).hide(300);
       $('.mdc-expansion-panel').not($('#' + $(this).attr("data-target"))).prev('[data-toggle="expansionPanel"]').removeClass("expanded");
-      // Open toggle menu
-      $('#' + $(this).attr("data-target")).slideToggle(300, function() {
+
+      // Open the clicked menu
+      $('#' + $(this).attr("data-target")).slideToggle(300, function () {
         $('#' + $(this).attr("data-target")).toggleClass('expanded');
       });
     });
 
-
-    // Add expanded class to mdc-drawer-link after expanded
+    // Add expanded class to mdc-drawer-link after expanding
     $('.mdc-drawer-item .mdc-expansion-panel').each(function () {
       $(this).prev('[data-toggle="expansionPanel"]').on('click', function () {
         $(this).toggleClass('expanded');
-      })
+      });
     });
 
-    //Applying perfect scrollbar to sidebar
+    // Apply PerfectScrollbar to the sidebar
     if (!body.hasClass("rtl")) {
       if ($('.mdc-drawer .mdc-drawer__content').length) {
         const chatsScroll = new PerfectScrollbar('.mdc-drawer .mdc-drawer__content');
       }
     }
-
   });
 })(jQuery);

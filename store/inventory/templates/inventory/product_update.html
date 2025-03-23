@@ -84,9 +84,28 @@
                             </div>
                         {% endif %}
                     </div>
+        
 
 
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-6">
+                        <label for="{{ form.code_bar.id_for_label }}" class="form-label">{{ form.code_bar.label }}</label>
+                        {{ form.code_bar }}
+                        {% if form.code_bar.errors %}
+                            <div class="text-danger">
+                                {% for error in form.code_bar.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
 
+
+                        <svg id="barcode"></svg>
+    
+                    </div>
                 </div>
                 <div class="form-group row">
                     <div class="col-md-6">
@@ -145,8 +164,29 @@
 
 {% block ScriptBlock %}
 <script>
-    
+    document.addEventListener("DOMContentLoaded", function() {
+        const codeBarInput = document.querySelector('[name="code_bar"]');
+        const barcodeValue = codeBarInput.value; // Get the initial value of the input field
+
+        // Display the barcode if the input already has a value on page load
+        if (barcodeValue) {
+            JsBarcode("#barcode", barcodeValue); // Generate the barcode
+        }
+
+        // Update the barcode dynamically as the input changes
+        codeBarInput.addEventListener('input', function () {
+            const newValue = this.value; // Get the current value of the input
+            if (newValue) {
+                JsBarcode("#barcode", newValue); // Generate the barcode
+            } else {
+                // Clear the barcode display if the input is empty
+                document.querySelector('#barcode').innerHTML = '';
+            }
+        });
+    });
 </script>
+
+
 <style>
     .container {
         background-color: #f8f9fa;

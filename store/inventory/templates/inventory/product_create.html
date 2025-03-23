@@ -95,6 +95,33 @@
                     {% endif %}
                 </div>
             </div>
+
+            <div class="form-group row">
+                <div class="col-md-6">
+                    <label for="{{ form.code_bar.id_for_label }}" class="form-label">{{ form.code_bar.label }}</label>
+                    {{ form.code_bar }}
+                    {% if form.code_bar.errors %}
+                        <div class="text-danger">
+                            {% for error in form.code_bar.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-2">
+
+                    <button type="button" id="barcode_generate" class="btn btn-success">Générer code Barre</button>
+
+
+                </div>
+                <div class="col-md-4">
+
+
+                    <svg id="barcode"></svg>
+
+                </div>
+            </div>
+
                 <div class="form-group row">
                     <div class="col-md-6">
                         <label class="form-label">{{ form.status.label }}</label>
@@ -151,6 +178,35 @@
 {% endblock %}
 
 {% block ScriptBlock %}
+
+<script>
+    document.querySelector('[name="code_bar"]').addEventListener('input', function () {
+        const barcodeValue = this.value; // Get the current value of the input
+        if (barcodeValue) {
+            JsBarcode("#barcode", barcodeValue); // Generate the barcode
+        } else {
+            // Clear the barcode display if the input is empty
+            document.querySelector('#barcode').innerHTML = '';
+        }
+    });
+
+    $('#barcode_generate').click(function() {
+        function generate13DigitNumber() {
+            const randomNumber = Math.floor(Math.random() * Math.pow(10, 12)) + Math.pow(10, 12);
+            return randomNumber;
+        }
+        
+        // Set the generated number to the input field and display the barcode
+        const generatedNumber = generate13DigitNumber();
+        document.getElementsByName('code_bar')[0].value = generatedNumber; // Corrected `Document.getElementByName` to `document.getElementsByName` and fixed the function call
+    
+        // Display the barcode using JsBarcode
+        JsBarcode("#barcode", generatedNumber);
+    
+        console.log(generatedNumber);
+    });
+    
+    </script>
 <style>
     .container {
         background-color: #f8f9fa;

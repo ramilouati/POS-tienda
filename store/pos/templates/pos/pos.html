@@ -103,6 +103,11 @@
                     <input type="hidden" name="tax_amount" value="0" />
                     <span hidden class="h4 fw" id="tax_amount">0.00</span>
                   </dd>
+                  <dt class="h5 fw text-light">Montant de remise</dt>
+                  <dd class="text-end py-1 px-2 rounded-0 bg-light">
+                    <input type="hidden" name="amountDescount" value="0" />
+                    <span class="h4 fw" id="amountDescount">0.00</span>
+                  </dd>
                   <dt class="h5 fw text-light">Total général</dt>
                   <dd class="text-end py-1 px-2 rounded-0 bg-light">
                     <input type="hidden" name="grand_total" value="0" />
@@ -194,10 +199,12 @@
     $('[name="tax"]').val(total_tax.toFixed(3));
     $('#tax_amount').text(parseFloat(total_tax).toLocaleString('en-US'));
     $('[name="tax_amount"]').val(parseFloat(total_tax));
+    $('#amountDescount').text(parseFloat(total_discount));
+    $('[name="amountDescount"]').val(parseFloat(total_discount));
     $('#grand_total').text(parseFloat(grand_total).toLocaleString('en-US'));
     $('[name="grand_total"]').val(parseFloat(grand_total));
-    $('#sub_total').text(parseFloat(sub_total).toLocaleString('en-US'));
-    $('[name="sub_total"]').val(parseFloat(sub_total));
+    $('#sub_total').text(parseFloat(sub_total).toLocaleString('fr-FR'));
+    $('[name="sub_total"]').val(parseFloat(sub_total).toFixed(3));
     $('[name="total_discount"]').val(parseFloat(total_discount));
   }
 
@@ -329,7 +336,7 @@
         success: function(resp) {
           if (typeof resp == 'object' && resp.status == 'success') {
             el.removeClass("alert alert-danger err-msg");
-            uni_modal("Recibo", "{% url 'pos:receipt-modal' %}?id=" + resp.sale);
+            uni_modal("Reçu", "{% url 'pos:receipt-modal' %}?id=" + resp.sale);
             $('#uni_modal').on('hide.bs.modal', function() {
               location.reload();
             });
