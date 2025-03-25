@@ -817,6 +817,7 @@ swap_vertical_circle e8d6
 switch_camera e41e
 switch_video e41f
 sync e627
+boxes-stacked f468
 sync_disabled e628
 sync_problem e629
 system_update e62a
