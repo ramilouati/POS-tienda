@@ -15,10 +15,9 @@
     mdc.textField.MDCTextField.attachTo(textField);
   }
 
-
+  // Menu handling
   const menuEls = Array.from(document.querySelectorAll('.mdc-menu'));
   menuEls.forEach((menuEl, index) => {
-    
     const menu = new mdc.menu.MDCMenu(menuEl);
     const buttonEl = menuEl.parentElement.querySelector('.mdc-menu-button');
     buttonEl.addEventListener('click', () => {
@@ -41,5 +40,30 @@
       contentEls[event.detail.index].classList.add('content--active');
     });
   }
+
+  // Sidebar navigation active state handling
+  document.addEventListener('DOMContentLoaded', function() {
+    // Get current path
+    const currentPath = window.location.pathname;
+    
+    // Find all navigation items
+    const navItems = document.querySelectorAll('.mdc-drawer-item');
+    
+    // Remove active class from all items first
+    navItems.forEach(item => {
+      item.classList.remove('mdc-drawer-item--activated');
+    });
+    
+    // Find and activate the current item
+    navItems.forEach(item => {
+      const link = item.querySelector('.mdc-drawer-link');
+      if (link) {
+        const linkPath = new URL(link.href).pathname;
+        if (linkPath === currentPath) {
+          item.classList.add('mdc-drawer-item--activated');
+        }
+      }
+    });
+  });
 
 })(jQuery);

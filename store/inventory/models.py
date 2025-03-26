@@ -41,7 +41,7 @@ class Products(models.Model):
         (STATUS_ACTIVE, 'Activo'),
     ]
 
-    code = models.CharField(max_length=100, unique=True)
+    code = models.CharField(max_length=100)
     category = models.ForeignKey('Category', on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)

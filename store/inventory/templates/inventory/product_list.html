@@ -61,7 +61,9 @@
         <tbody>
           {% for product in products %}
             <tr>
-              <td class="text-center">{{ product.code_bar }}</td>
+              <td class="text-center">
+                {{ product.code_bar }}
+              </td>
               
               <td class="link-cell">
                 <a href="{% url 'inventory:product_detail' product.pk %}">{{ product.name }}</a>
