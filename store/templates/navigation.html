@@ -10,19 +10,19 @@
     <div class="mdc-drawer__content">
         <div class="mdc-list-group">
             <nav class="mdc-list mdc-drawer-menu">
-                <div class="mdc-list-item mdc-drawer-item">
+                <div class="mdc-list-item mdc-drawer-item {% if request.resolver_match.url_name == 'home-page' %}mdc-drawer-item--activated{% endif %}">
                     <a class="mdc-drawer-link" href="{% url 'home-page' %}">
                         <i class="material-icons mdc-list-item__start-detail mdc-drawer-item-icon" aria-hidden="true">home</i> Commencer
                     </a>
                 </div>
-
+            
                 <hr class="separator" style="margin: 5px 0;">
-                <div class="mdc-list-item mdc-drawer-item">
+                <div class="mdc-list-item mdc-drawer-item" data-url-name="pos:pos-page">
                     <a class="mdc-drawer-link" href="{% url 'pos:pos-page' %}">
                         <i class="material-icons mdc-list-item__start-detail mdc-drawer-item-icon" aria-hidden="true">store</i> POS
                     </a>
                 </div>
-                <div class="mdc-list-item mdc-drawer-item">
+                <div class="mdc-list-item mdc-drawer-item {% if request.resolver_match.url_name == 'sales-page' %}mdc-drawer-item--activated{% endif %}">
                     <a class="mdc-drawer-link" href="{% url 'pos:sales-page' %}">
                         <i class="material-icons mdc-list-item__start-detail mdc-drawer-item-icon" aria-hidden="true">receipt</i> Ventes
                     </a>
@@ -54,6 +54,11 @@
                 <div class="mdc-list-item mdc-drawer-item">
                     <a class="mdc-drawer-link" href="{% url 'purchase:purchase_list' %}" >
                         <i class="material-icons mdc-list-item__start-detail mdc-drawer-item-icon" aria-hidden="true">shopping_cart</i> Achat de produits
+                    </a>
+                </div>
+                <div class="mdc-list-item mdc-drawer-item">
+                    <a class="mdc-drawer-link" href="{% url 'pos:inventorybyqty' %}" >
+                        <i class="material-icons mdc-list-item__start-detail mdc-drawer-item-icon" aria-hidden="true">add_box</i> Inventaire
                     </a>
                 </div>
 

@@ -41,7 +41,7 @@ class Products(models.Model):
         (STATUS_ACTIVE, 'Activo'),
     ]
 
-    code = models.CharField(max_length=100, unique=True)
+    code = models.CharField(max_length=100)
     category = models.ForeignKey('Category', on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
@@ -52,6 +52,7 @@ class Products(models.Model):
     date_updated = models.DateTimeField(auto_now=True)
     quantity = models.PositiveIntegerField(default=0)
     taxpercentage = models.PositiveIntegerField(default=0)
+    code_bar = models.CharField(max_length=100,default="")
     class Meta:
         indexes = [
             models.Index(fields=['code']),

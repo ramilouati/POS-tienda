@@ -1,0 +1,50 @@
+{% extends "base.html" %} {% load humanize %} {% block pageContent %}
+<div class="mdc-layout-grid__cell stretch-card mdc-layout-grid__cell--span-12">
+    <div class="mdc-card py-2">
+        <div class="d-flex justify-content-between align-items-center">
+            <h4 class="card-title mb-0">Produits à acheter</h4>
+        </div>
+    </div>
+</div>
+<div class="mdc-layout-grid__cell stretch-card mdc-layout-grid__cell--span-12">
+    <div class="mdc-card">
+        <div class="table-responsive">
+            <table id="miTabla" class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th class="text-center py-1">Produit</th>
+                        <th class="text-center py-1">Quantité dans le stock</th>
+                        <th class="text-center py-1">Totale vendu (Dérnier 30 jours) </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products_to_purchase %}
+                  
+                        <tr>
+                            <td>{{ product.name }}</td>
+                            <td>{{ product.quantity_in_stock }}</td>
+                            <td>{{ product.total_sold }}</td>
+             
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>{% endblock pageContent %} {% block ScriptBlock %}
+<script>
+    $(document).ready(function() {
+      $('#miTabla').DataTable({
+        "paging": true,
+        "ordering": true,
+        "searching": true,
+        "responsive": true,
+        "lengthChange": false,
+        "autoWidth": false,
+        "order": [[1, "desc"]], 
+        "buttons": ['copy', 'csv', 'excel', 'pdf', 'print', 'colvis']
+      }).buttons().container().appendTo('#miTabla_wrapper .col-md-6:eq(0)');
+    });
+  </script>
+
+{% endblock ScriptBlock %}
