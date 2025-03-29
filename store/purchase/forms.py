@@ -35,20 +35,39 @@ class SupplierForm(forms.ModelForm):
 class ClientForm(forms.ModelForm):
     class Meta:
         model = Client
-        fields = ['name', 'contact_info']
+        fields = ['name', 'email', 'phone', 'address', 'client_type', 'contact_info']  # Removed 'contact_info'
         labels = {
-            'name': 'Noms et noms de famille (personne / entreprise) ',
-            'contact_info': 'Informations sur les clients',
+            'name': 'Nom du client',
+            'email': 'Adresse e-mail',
+            'phone': 'Numéro de téléphone',
+            'address': 'Adresse',
+            'client_type': 'Type de client',
+            'contact_info': 'Information Client',
         }
         widgets = {
             'name': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Noms et nom de famille / Empresa S.A.   ',
+                'placeholder': 'Nom et prénom ou entreprise',
             }),
-            'contact_info': forms.Textarea(attrs={
+            'email': forms.EmailInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Entrez des informations:  Adresse  and Téléphone   item  etc',
-                'rows': 6,  
+                'placeholder': 'exemple@email.com',
+            }),
+            'phone': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Numéro de téléphone',
+            }),
+            'address': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Adresse complète',
+            }),
+            'client_type': forms.Select(attrs={
+                'class': 'form-control',
+            }, choices=Client.TYPE_CHOICES),
+            
+            'contact_info': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Infomations de client',
             }),
         }
         error_messages = {
@@ -56,11 +75,27 @@ class ClientForm(forms.ModelForm):
                 'required': 'Le nom du client est obligatoire.',
                 'max_length': 'Le nom ne peut pas dépasser 100 caractères.',
             },
+            'email': {
+                'invalid': 'Veuillez entrer une adresse e-mail valide.',
+                'unique': 'Cette adresse e-mail est déjà utilisée.',
+            },
+            'phone': {
+                'required': 'Le numéro de téléphone est obligatoire.',
+                'max_length': 'Le numéro de téléphone ne peut pas dépasser 15 caractères.',
+            },
+            'address': {
+                'required': 'L\'adresse est obligatoire.',
+                'max_length': 'L\'adresse ne peut pas dépasser 200 caractères.',
+            },
+            'client_type': {
+                'required': 'Veuillez choisir un type de client.',
+            },
             'contact_info': {
-                'required': 'Les coordonnées sont obligatoires.',
-                'max_length': 'Les coordonnées ne peuvent pas dépasser 200 caracteres.',
+                'required': 'L\'informations est obligatoire.',
+                'max_length': 'L\'Informations Client ne peut pas dépasser 500 caractères.',
             },
         }
+
 class PurchaseForm(forms.ModelForm):
     class Meta:
         model = PurchaseProduct
