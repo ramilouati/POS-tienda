@@ -2138,6 +2138,7 @@ svg.mdc-button__icon {
 }
 
 .mdc-drawer {
+  
   border-color: rgba(0, 0, 0, 0.12);
   background-color: #fff;
   /* @noflip */
@@ -22887,6 +22888,8 @@ address p {
 
 .mdc-drawer--open, .mdc-drawer__drawer {
   width: 243px;
+  background: url(../../images/sidebar/sidebar-bg.jpg);
+
 }
 
 .mdc-drawer .mdc-drawer__header {

@@ -6,9 +6,9 @@ from django.views import generic
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 
-from .models import Supplier, PurchaseProduct,Client
-from .forms import SupplierForm, PurchaseForm,ClientForm
-from inventory.models import Products 
+from .models import Supplier, PurchaseProduct, Client
+from .forms import SupplierForm, PurchaseForm, ClientForm
+from inventory.models import Products
 
 from django.core.exceptions import ValidationError
 
@@ -28,12 +28,12 @@ class SupplierCreate(LoginRequiredMixin, PermissionRequiredMixin, generic.Create
     def form_valid(self, form):
         response = super().form_valid(form)
         supplier_name = form.instance.name
-        messages.success(self.request, f"Proveedor '{supplier_name}' creado exitosamente.")
+        messages.success(self.request, f"Fournisseur '{supplier_name}' créé avec succès.")
         return response
 
     def form_invalid(self, form):
-        logger.error("Error creating supplier: %s", form.errors)
-        messages.error(self.request, "Hubo un error al crear el proveedor. Por favor, intente de nuevo.")
+        logger.error("Erreur lors de la création du fournisseur : %s", form.errors)
+        messages.error(self.request, "Une erreur s'est produite lors de la création du fournisseur. Veuillez réessayer.")
         return self.render_to_response(self.get_context_data(form=form))
     
     
@@ -47,7 +47,7 @@ class SupplierUpdate(LoginRequiredMixin, PermissionRequiredMixin, generic.Update
     def form_valid(self, form):
         supplier_name = self.get_object().name
         response = super().form_valid(form)
-        messages.success(self.request, f"Proveedor '{supplier_name}' actualizada exitosamente.")
+        messages.success(self.request, f"Fournisseur '{supplier_name}' mis à jour avec succès.")
         return response
     
 class SupplierDelete(LoginRequiredMixin, SuccessMessageMixin, PermissionRequiredMixin, generic.DeleteView):
@@ -59,7 +59,7 @@ class SupplierDelete(LoginRequiredMixin, SuccessMessageMixin, PermissionRequired
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         supplier_name = self.object.name
-        success_message = f"Proveedor '{supplier_name}' eliminado exitosamente."
+        success_message = f"Fournisseur '{supplier_name}' supprimé avec succès."
         messages.success(self.request, success_message)
         return self.delete(request, *args, **kwargs)
 
@@ -80,12 +80,12 @@ class ClientCreate(LoginRequiredMixin, PermissionRequiredMixin, generic.CreateVi
     def form_valid(self, form):
         response = super().form_valid(form)
         client_name = form.instance.name
-        messages.success(self.request, f"Client '{client_name}'créé avec succès.")
+        messages.success(self.request, f"Client '{client_name}' créé avec succès.")
         return response
 
     def form_invalid(self, form):
-        logger.error("Error creating client: %s", form.errors)
-        messages.error(self.request, "Il y a eu une erreur lors de la création du client.Veuillez réessayer.")
+        logger.error("Erreur lors de la création du client : %s", form.errors)
+        messages.error(self.request, "Une erreur s'est produite lors de la création du client. Veuillez réessayer.")
         return self.render_to_response(self.get_context_data(form=form))
     
     
@@ -111,19 +111,19 @@ class ClientDelete(LoginRequiredMixin, SuccessMessageMixin, PermissionRequiredMi
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         client_name = self.object.name
-        success_message = f"Client '{client_name}' éliminé avec succès."
+        success_message = f"Client '{client_name}' supprimé avec succès."
         messages.success(self.request, success_message)
         return self.delete(request, *args, **kwargs)
 
 
-class PurchaseList(LoginRequiredMixin,PermissionRequiredMixin, generic.ListView):
+class PurchaseList(LoginRequiredMixin, PermissionRequiredMixin, generic.ListView):
     model = PurchaseProduct
     template_name = 'purchases/purchase_list.html'
     context_object_name = 'purchases'
     ordering = ['-date_updated'] 
     permission_required = 'purchase.view_purchaseproduct'
     
-class PurchaseCreate(LoginRequiredMixin,PermissionRequiredMixin, generic.CreateView):
+class PurchaseCreate(LoginRequiredMixin, PermissionRequiredMixin, generic.CreateView):
     model = PurchaseProduct
     form_class = PurchaseForm  
     template_name = 'purchases/purchase_create.html'
@@ -133,12 +133,12 @@ class PurchaseCreate(LoginRequiredMixin,PermissionRequiredMixin, generic.CreateV
     def form_valid(self, form):
         response = super().form_valid(form)
         purchase_name = form.instance.product.name
-        messages.success(self.request, f" Compra de '{purchase_name}' registrada exitosamente.")
+        messages.success(self.request, f"Achat de '{purchase_name}' enregistré avec succès.")
         return response
 
     def form_invalid(self, form):
-        logger.error("Error creating supplier: %s", form.errors)
-        messages.error(self.request, "Hubo un error al crear la Compra. Por favor, intente de nuevo.")
+        logger.error("Erreur lors de la création de l'achat : %s", form.errors)
+        messages.error(self.request, "Une erreur s'est produite lors de la création de l'achat. Veuillez réessayer.")
         return self.render_to_response(self.get_context_data(form=form))
     
 class PurchaseUpdate(LoginRequiredMixin, PermissionRequiredMixin, generic.UpdateView):
@@ -151,12 +151,12 @@ class PurchaseUpdate(LoginRequiredMixin, PermissionRequiredMixin, generic.Update
     def form_valid(self, form):
         purchase_name = self.get_object().product.name
         response = super().form_valid(form)
-        messages.success(self.request, f"Compra de '{purchase_name}' actualizada exitosamente.")
+        messages.success(self.request, f"Achat de '{purchase_name}' mis à jour avec succès.")
         return response
     
     def form_invalid(self, form):
-        logger.error("Error updating product: %s", form.errors)
-        messages.error(self.request, "Hubo un error al actualizar el producto. Por favor, intente de nuevo.")
+        logger.error("Erreur lors de la mise à jour du produit : %s", form.errors)
+        messages.error(self.request, "Une erreur s'est produite lors de la mise à jour du produit. Veuillez réessayer.")
         return self.render_to_response(self.get_context_data(form=form))
 
 
@@ -164,7 +164,7 @@ class PurchaseDelete(SuccessMessageMixin, PermissionRequiredMixin, generic.Delet
     model = PurchaseProduct
     template_name = 'purchases/purchase_delete.html'
     success_url = reverse_lazy('purchase:purchase_list')
-    success_message = "Compra eliminada exitosamente."
+    success_message = "Achat supprimé avec succès."
     permission_required = 'purchase.delete_purchaseproduct'
 
     def delete(self, request, *args, **kwargs):
@@ -176,4 +176,3 @@ class PurchaseDelete(SuccessMessageMixin, PermissionRequiredMixin, generic.Delet
         context = super().get_context_data(**kwargs)
         context['purchase'] = self.get_object() 
         return context
-    

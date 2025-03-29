@@ -52,7 +52,7 @@ class Products(models.Model):
     date_updated = models.DateTimeField(auto_now=True)
     quantity = models.PositiveIntegerField(default=0)
     taxpercentage = models.PositiveIntegerField(default=0)
-    code_bar = models.CharField(max_length=100,default="")
+    code_bar = models.CharField(max_length=100,default="",blank=True)
     class Meta:
         indexes = [
             models.Index(fields=['code']),
