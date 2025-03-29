@@ -53,7 +53,7 @@ class CategoryForm(forms.ModelForm):
 class ProductsForm(forms.ModelForm):
     class Meta:
         model = Products
-        fields = ['code', 'category', 'name', 'description', 'price', 'status','taxpercentage']
+        fields = ['code', 'category', 'name', 'description', 'price', 'status','taxpercentage',"code_bar"]
         labels = {
             'code': 'Code',
             'category': 'Catégorie',
@@ -63,28 +63,29 @@ class ProductsForm(forms.ModelForm):
             'status': 'État',
             'cost': 'Coût',
             'quantity': 'Quantité',
-            'taxpercentage': 'Pourcentage de TVA'
+            'taxpercentage': 'Pourcentage de TVA',
+            'code_bar': 'Code barre'
         }
         widgets = {
             'code': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Vino001',
+                'placeholder': 'code',
             }),
             'category': forms.Select(attrs={
                 'class': 'form-control',
             }),
             'name': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Vino Dulce',
+                'placeholder': 'nom de produit',
             }),
             'description': forms.Textarea(attrs={
                 'class': 'form-control',
-                'placeholder': 'Ingrese información general Etc.',
+                'placeholder': 'Entrez des informations générales, etc..',
                 'rows': 3,
             }),
             'price': forms.NumberInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Ingrese el precio del producto',
+                'placeholder': 'Prix',
                 'step': '0.01',
             }),
                     'taxpercentage': forms.NumberInput(attrs={
@@ -102,6 +103,8 @@ class ProductsForm(forms.ModelForm):
             'cost': forms.NumberInput(attrs={
                 'class': 'form-control'}),
             'quantity': forms.NumberInput(attrs={
+                'class': 'form-control'}),
+             'code_bar': forms.NumberInput(attrs={
                 'class': 'form-control'}),
         }
         error_messages = {
@@ -125,6 +128,10 @@ class ProductsForm(forms.ModelForm):
                      'taxpercentage': {
                 'required': 'Ce champ est obligatoire.',
                 'invalid': 'Entrez un prix valide.',
+            },
+                                 'Code Barre': {
+                'required': 'Ce champ est obligatoire.',
+                'invalid': 'Entrez un code valide.',
             },
             'status': {
                 'required': 'Ce champ est obligatoire.',

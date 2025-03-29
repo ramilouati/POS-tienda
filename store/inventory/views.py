@@ -18,7 +18,6 @@ from .forms import ProductsForm, CategoryForm
 
 logger = logging.getLogger(__name__)
 
-
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
 class CategoryProductsList(LoginRequiredMixin, PermissionRequiredMixin, generic.ListView):
@@ -57,12 +56,12 @@ class CategoryCreate(LoginRequiredMixin, PermissionRequiredMixin, generic.Create
     def form_valid(self, form):
         response = super().form_valid(form)
         category_name = form.instance.name
-        messages.success(self.request, f"Categoria '{category_name}' creado exitosamente.")
+        messages.success(self.request, f"Catégorie '{category_name}' créée avec succès.")
         return response
 
     def form_invalid(self, form):
-        logger.error("Error creating category: %s", form.errors)
-        messages.error(self.request, "Hubo un error al crear el categoria. Por favor, intente de nuevo.")
+        logger.error("Erreur lors de la création de la catégorie : %s", form.errors)
+        messages.error(self.request, "Une erreur s'est produite lors de la création de la catégorie. Veuillez réessayer.")
         return self.render_to_response(self.get_context_data(form=form))
     
 class CategoryUpdate(LoginRequiredMixin, PermissionRequiredMixin, generic.UpdateView):
@@ -75,12 +74,12 @@ class CategoryUpdate(LoginRequiredMixin, PermissionRequiredMixin, generic.Update
     def form_valid(self, form):
         category_name = self.get_object().name
         response = super().form_valid(form)
-        messages.success(self.request, f"Categoría '{category_name}' actualizada exitosamente.")
+        messages.success(self.request, f"Catégorie '{category_name}' mise à jour avec succès.")
         return response
 
     def form_invalid(self, form):
         category_name = self.get_object().name
-        messages.error(self.request, f"No se pudo actualizar la categoría '{category_name}'. Por favor corrige los errores.")
+        messages.error(self.request, f"Impossible de mettre à jour la catégorie '{category_name}'. Veuillez corriger les erreurs.")
         return super().form_invalid(form)
     
 class CategoryDelete(LoginRequiredMixin, SuccessMessageMixin,PermissionRequiredMixin, generic.DeleteView):
@@ -92,7 +91,7 @@ class CategoryDelete(LoginRequiredMixin, SuccessMessageMixin,PermissionRequiredM
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         category_name = self.object.name
-        success_message = f"Categoria '{category_name}' eliminado exitosamente."
+        success_message = f"Catégorie '{category_name}' supprimée avec succès."
         messages.success(self.request, success_message)
         return self.delete(request, *args, **kwargs)
 
@@ -109,10 +108,10 @@ class ProductDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.Det
         product = self.get_object()
         
         purchase_products = PurchaseProduct.objects.filter(product=product)
-        logger.debug(f"Purchase products count: {purchase_products.count()}")
+        logger.debug(f"Nombre d'achats liés au produit : {purchase_products.count()}")
 
         cantidad_historica = sum([pp.qty for pp in purchase_products])
-        logger.debug(f"Cantidad histórica calculada: {cantidad_historica}")
+        logger.debug(f"Quantité historique calculée : {cantidad_historica}")
 
         context['cantidad_historica'] = cantidad_historica
         return context
@@ -133,12 +132,12 @@ class ProductCreate(LoginRequiredMixin, PermissionRequiredMixin, generic.CreateV
     def form_valid(self, form):
         response = super().form_valid(form)
         product_name = form.instance.name
-        messages.success(self.request, f"Producto '{product_name}' creado exitosamente.")
+        messages.success(self.request, f"Produit '{product_name}' créé avec succès.")
         return response
 
     def form_invalid(self, form):
-        logger.error("Error creating product: %s", form.errors)
-        messages.error(self.request, "Hubo un error al crear el producto. Por favor, intente de nuevo.")
+        logger.error("Erreur lors de la création du produit : %s", form.errors)
+        messages.error(self.request, "Une erreur s'est produite lors de la création du produit. Veuillez réessayer.")
         return self.render_to_response(self.get_context_data(form=form))
     
 class ProductUpdate(LoginRequiredMixin, PermissionRequiredMixin, generic.UpdateView):
@@ -151,12 +150,12 @@ class ProductUpdate(LoginRequiredMixin, PermissionRequiredMixin, generic.UpdateV
     def form_valid(self, form):
         product_name = self.get_object().name
         response = super().form_valid(form)
-        messages.success(self.request, f"Producto '{product_name}' actualizado exitosamente.")
+        messages.success(self.request, f"Produit '{product_name}' mis à jour avec succès.")
         return response
     
     def form_invalid(self, form):
-        logger.error("Error updating product: %s", form.errors)
-        messages.error(self.request, "Hubo un error al actualizar el producto. Por favor, intente de nuevo.")
+        logger.error("Erreur lors de la mise à jour du produit : %s", form.errors)
+        messages.error(self.request, "Une erreur s'est produite lors de la mise à jour du produit. Veuillez réessayer.")
         return self.render_to_response(self.get_context_data(form=form))
 
 class ProductDelete(LoginRequiredMixin, SuccessMessageMixin,PermissionRequiredMixin,  generic.DeleteView):
@@ -168,7 +167,6 @@ class ProductDelete(LoginRequiredMixin, SuccessMessageMixin,PermissionRequiredMi
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         product_name = self.object.name
-        success_message = f"Producto '{product_name}' eliminado exitosamente."
+        success_message = f"Produit '{product_name}' supprimé avec succès."
         messages.success(self.request, success_message)
         return self.delete(request, *args, **kwargs)
-    

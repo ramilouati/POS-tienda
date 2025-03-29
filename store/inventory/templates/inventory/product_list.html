@@ -45,7 +45,7 @@
       <table id="miTabla" class="table table-striped table-bordered datatable">
         <thead>
           <tr>
-            <th>Code</th>
+            <th>Code-barre</th>
             <th>Nom de produit</th>
             <th>Catégorie</th>
             <th>Coût</th>
@@ -55,13 +55,15 @@
             
             <th>État</th>
             <th>Dernière date de mise à jour</th>
-            <th class="text-center">Actes</th>
+            <th class="text-center">Actions</th>
           </tr>
         </thead>
         <tbody>
           {% for product in products %}
             <tr>
-              <td class="text-center">{{ product.code }}</td>
+              <td class="text-center">
+                {{ product.code_bar }}
+              </td>
               
               <td class="link-cell">
                 <a href="{% url 'inventory:product_detail' product.pk %}">{{ product.name }}</a>

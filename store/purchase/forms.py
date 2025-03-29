@@ -14,22 +14,22 @@ class SupplierForm(forms.ModelForm):
         widgets = {
             'name': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Nombres y Apellido / Empresa S.A.    ',
+                'placeholder': 'Noms et nom de famille / Empresa S.A.   ',
             }),
             'contact_info': forms.Textarea(attrs={
                 'class': 'form-control',
-                'placeholder': 'Ingrese información:\n Dirección\n Teléfono\n Rubro\n Etc',
+                'placeholder': 'Entrez des informations:  Adresse  and Téléphone   item  etc',
                 'rows': 6,  
             }),
         }
         error_messages = {
             'name': {
-                'required': 'El nombre del proveedor es obligatorio.',
-                'max_length': 'El nombre no puede exceder los 100 caracteres.',
+                'required': 'le nom est obligatoire.',
+                'max_length': 'le nom ne peut pas depasser 100 caracteres.',
             },
             'contact_info': {
-                'required': 'La información de contacto es obligatoria.',
-                'max_length': 'La información de contacto no puede exceder los 200 caracteres.',
+                'required': 'les informations des contact sont obligatoires.',
+                'max_length': 'les informations des contact ne peuvent pas depasser 200 caracteres.',
             },
         }
 class ClientForm(forms.ModelForm):
@@ -101,31 +101,31 @@ class PurchaseForm(forms.ModelForm):
         model = PurchaseProduct
         fields = ['supplier', 'product','cost','qty']
         labels = {
-            'supplier': 'Proveedor',
-            'product': 'Productos',
-            'cost': 'Costo',
-            'qty':'Cantidad',
+            'supplier': 'Fournisseur',
+            'product': 'Produit',
+            'cost': 'Cout',
+            'qty':'Quantité',
         }
         widgets = {
             'supplier': forms.Select(attrs={'class': 'form-control'}),
             'product': forms.Select(attrs={'class': 'form-control'}),
             'cost': forms.NumberInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Ingrese el monto total',
+                'placeholder': 'Entrez le montant total',
             }),
             'qty': forms.NumberInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Ingrese el monto total',
+                'placeholder': 'Entrez la quanttié total',
             }),
         }
         error_messages = {
             'qty': {
-                'required': 'El cantidad es obligatorio.',
-                'invalid': 'Ingrese un cantidad válida.',
+                'required': 'La quantité est obligatoire.',
+                'invalid': 'Entrez une quantité valide.',
             },
             'cost':{
-                'required': 'El costo debe tener 8 decimales.',
-                'invalid': 'Ingrese un monto válido.',
+                'required': 'Le montant est obligatoire.',
+                'invalid': 'Entrez un montant valide.',
             }
         }
         

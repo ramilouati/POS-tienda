@@ -5,8 +5,9 @@ from django import forms
 
 from purchase.models import *
 MONTH_NAMES = [
-    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+    'Juillet', 'Aout', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
+
 ]
 
 
@@ -14,13 +15,13 @@ MONTH_CHOICES = [(str(i), month) for i, month in enumerate(MONTH_NAMES, 1)]
 
 
 DAYS_OF_WEEK = {
-    'Monday': 'Lunes',
-    'Tuesday': 'Martes',
-    'Wednesday': 'Miércoles',
-    'Thursday': 'Jueves',
-    'Friday': 'Viernes',
-    'Saturday': 'Sábado',
-    'Sunday': 'Domingo'
+    'Monday': 'Lundi',
+    'Tuesday': 'Mardi',
+    'Wednesday': 'Mérecredi',
+    'Thursday': 'Jeudi',
+    'Friday': 'Vendredi',
+    'Saturday': 'Samedi',
+    'Sunday': 'Dimanche',
 }
 
 class SalesReportForm(forms.Form):
@@ -30,35 +31,35 @@ class SalesReportForm(forms.Form):
 
 
 class YearMonthForm(forms.Form):
-    year = forms.IntegerField(label="Año", min_value=1900, max_value=2100)
-    month = forms.ChoiceField(label="Mes", choices=MONTH_CHOICES)
+    year = forms.IntegerField(label="Année", min_value=1900, max_value=2100)
+    month = forms.ChoiceField(label="Mois", choices=MONTH_CHOICES)
 
 
 class YearForm(forms.Form):
-    year = forms.IntegerField(label="Año", min_value=1900, max_value=2100)
+    year = forms.IntegerField(label="Année", min_value=1900, max_value=2100)
 
 
 class DayForm(forms.Form):
-    year = forms.IntegerField(label="Año", min_value=1900, max_value=2100)
-    month = forms.ChoiceField(label="Mes", choices=MONTH_CHOICES)
-    day = forms.IntegerField(label="Día", min_value=1, max_value=31)
+    year = forms.IntegerField(label="Année", min_value=1900, max_value=2100)
+    month = forms.ChoiceField(label="Mois", choices=MONTH_CHOICES)
+    day = forms.IntegerField(label="Jour", min_value=1, max_value=31)
 
 
 class DateRangeForm(forms.Form):
-    fecha_desde = forms.DateField(label="Fecha desde", widget=forms.DateInput(attrs={'type': 'date'}))
-    fecha_hasta = forms.DateField(label="Fecha hasta", widget=forms.DateInput(attrs={'type': 'date'}))
+    fecha_desde = forms.DateField(label="Date à partir de", widget=forms.DateInput(attrs={'type': 'date'}))
+    fecha_hasta = forms.DateField(label="Date à", widget=forms.DateInput(attrs={'type': 'date'}))
 
 
 class ReportForm(forms.Form):
     pass
 
 class MonthReportForm(forms.Form):
-    year = forms.IntegerField(label='Año', min_value=1900, max_value=datetime.now().year)
-    month = forms.IntegerField(label='Mes', min_value=1, max_value=12)
+    year = forms.IntegerField(label='Année', min_value=1900, max_value=datetime.now().year)
+    month = forms.IntegerField(label='Mois', min_value=1, max_value=12)
 
 class DayReportForm(forms.Form):
-    year = forms.IntegerField(label='Año', min_value=1900, max_value=datetime.now().year)
-    month = forms.IntegerField(label='Mes', min_value=1, max_value=12)
+    year = forms.IntegerField(label='Année', min_value=1900, max_value=datetime.now().year)
+    month = forms.IntegerField(label='Mois', min_value=1, max_value=12)
     day = forms.IntegerField(label='Día', min_value=1, max_value=31)
 
 class PurchaseReportForm(forms.Form):
@@ -75,47 +76,47 @@ class YearReportForm(forms.Form):
 
 class MonthYearReportForm(forms.Form):
     year = forms.IntegerField(min_value=2000, max_value=timezone.now().year, label='Año')
-    month = forms.IntegerField(min_value=1, max_value=12, label='Mes')
+    month = forms.IntegerField(min_value=1, max_value=12, label='Mois')
 
 class DayMonthYearReportForm(forms.Form):
     year = forms.IntegerField(min_value=2000, max_value=timezone.now().year, label='Año')
-    month = forms.IntegerField(min_value=1, max_value=12, label='Mes')
+    month = forms.IntegerField(min_value=1, max_value=12, label='Mois')
     day = forms.IntegerField(min_value=1, max_value=31, label='Día')  # Nota: No valida días específicos para cada mes
 
 class DayTramoForm(forms.Form):
-    start_year = forms.IntegerField(label='Año Inicio', min_value=2023)
-    start_month = forms.ChoiceField(label='Mes Inicio', choices=[
-        ('', 'Mes'),
-        (1, 'Enero'),
-        (2, 'Febrero'),
-        (3, 'Marzo'),
-        (4, 'Abril'),
-        (5, 'Mayo'),
-        (6, 'Junio'),
-        (7, 'Julio'),
-        (8, 'Agosto'),
-        (9, 'Septiembre'),
-        (10, 'Octubre'),
-        (11, 'Noviembre'),
-        (12, 'Diciembre'),
+    start_year = forms.IntegerField(label="Début de l'année", min_value=2023)
+    start_month = forms.ChoiceField(label='Début de Mois', choices=[
+        ('', 'Mois'),
+        (1, 'Janvier'),
+        (2, 'Février'),
+        (3, 'Mars'),
+        (4, 'Avril'),
+        (5, 'Mai'),
+        (6, 'Juin'),
+        (7, 'Juillet'),
+        (8, 'Août'),
+        (9, 'Septembre'),
+        (10, 'Octobre'),
+        (11, 'Novembre'),
+        (12, 'Décembre'),
     ])
-    start_day = forms.IntegerField(label='Día Inicio', min_value=1, max_value=31)
+    start_day = forms.IntegerField(label='Jour de départ', min_value=1, max_value=31)
 
-    end_year = forms.IntegerField(label='Año Fin', min_value=2023)
-    end_month = forms.ChoiceField(label='Mes Fin', choices=[
-        ('', 'Mes'),
-        (1, 'Enero'),
-        (2, 'Febrero'),
-        (3, 'Marzo'),
-        (4, 'Abril'),
-        (5, 'Mayo'),
-        (6, 'Junio'),
-        (7, 'Julio'),
-        (8, 'Agosto'),
-        (9, 'Septiembre'),
-        (10, 'Octubre'),
-        (11, 'Noviembre'),
-        (12, 'Diciembre'),
+    end_year = forms.IntegerField(label="Fin d'année", min_value=2023)
+    end_month = forms.ChoiceField(label='Fin de Mois', choices=[
+         ('', 'Mois'),
+        (1, 'Janvier'),
+        (2, 'Février'),
+        (3, 'Mars'),
+        (4, 'Avril'),
+        (5, 'Mai'),
+        (6, 'Juin'),
+        (7, 'Juillet'),
+        (8, 'Août'),
+        (9, 'Septembre'),
+        (10, 'Octobre'),
+        (11, 'Novembre'),
+        (12, 'Décembre'),
     ])
-    end_day = forms.IntegerField(label='Día Fin', min_value=1, max_value=31)
+    end_day = forms.IntegerField(label='Fin du jour', min_value=1, max_value=31)
 

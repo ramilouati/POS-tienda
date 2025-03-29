@@ -1,129 +1,128 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block pageContent %}
-  <div class="mdc-layout-grid__cell stretch-card mdc-layout-grid__cell--span-12">
-    <div class="mdc-card py-2">
-      <div class="d-flex justify-content-between align-items-center">
-        <h4 class="card-title mb-0">Point de vente</h4>
-      </div>
+<div class="mdc-layout-grid__cell stretch-card mdc-layout-grid__cell--span-12">
+  <div class="mdc-card py-2">
+    <div class="d-flex justify-content-between align-items-center">
+      <h4 class="card-title mb-0">Point de vente</h4>
     </div>
   </div>
-  <div class="mdc-layout-grid__cell stretch-card mdc-layout-grid__cell--span-12">
-    <div class="mdc-card">
-      <form action="" id="pos-form">
-        <fieldset>
-          <legend>Ajouter le produit</legend>
-          <div class="row align-items-end">
-            <div class="col-lg-5 col-md-5 col-sm-12">
-              <div class="form-group mb-3">
-                <label for="client-id">Sélectionner le client</label>
-                <select id="client-id" class="form-select form-select-sm">
-                  <option value="" disabled selected></option>
-                  {% for client in clients %}
-                    <option value="{{ client.pk }}">{{ client }}</option>
-                  {% endfor %}
-                </select>
-              </div>
-              <div>
-                <input id="code-bar" class="form-control" placeholder="Scan barcode here" />
-              </div>
+</div>
+<div class="mdc-layout-grid__cell stretch-card mdc-layout-grid__cell--span-12">
+  <div class="mdc-card">
+    <form action="" id="pos-form">
+      <fieldset>
+        <legend>Ajouter le produit</legend>
+        <div class="row align-items-end">
+          <div class="col-lg-5 col-md-6 col-sm-12">
+            <div class="form-group mb-3">
+              <label for="client-id">Sélectionner le client</label>
+              <select id="client-id" class="form-select form-select-sm">
+                <option value="" disabled selected></option>
+                {% for client in clients %}
+                  <option value="{{ client.pk }}">{{ client }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div>
+              <input id="code-bar" class="form-control" placeholder="Scan barcode here" />
+            </div>
 
-              <div class="form-group mb-3">
-                <label for="product-id">Sélectionner le produit</label>
-                <select id="product-id" class="form-select form-select-sm">
-                  <option value="" disabled selected></option>
-                  {% for product in products %}
-                    <option value="{{ product.pk }}">{{ product.code }} -{{ product }}</option>
-                  {% endfor %}
-                </select>
-              </div>
-            </div>
-            <div class="col-lg-3 col-md-5 col-md-12">
-              <div class="form-group mb-3">
-                <label for="product-qty">Quantité</label>
-                <input type="number" class="form-control form-control-sm text-center" step="any" id="product-qty" value="1" />
-              </div>
-            </div>
-            <div class="col-lg-4 col-md-2 col-md-12">
-              <div class="form-group mb-3">
-                <button class="btn btn-light btn-sm bg-gradient border rounded-0 text-start" type="button" id="add_item"><i class="mdi mdi-plus"></i> Ajouter</button>
-              </div>
+            <div class="form-group mb-3">
+              <label for="product-id">Sélectionner le produit</label>
+              <select id="product-id" class="form-select form-select-sm">
+                <option value="" disabled selected></option>
+                {% for product in products %}
+                  <option value="{{ product.pk }}">{{ product.code }} -{{ product }}</option>
+                {% endfor %}
+              </select>
             </div>
           </div>
-        </fieldset>
-        <fieldset>
-          <div class="d-flex w-100" id="POS-field">
-            <div class="col-8 bg-gradient bg-light border h-100">
-              <table class="table table-bordered">
-                <colgroup>
-                  <col width="5%" />
-                  <col width="10%" />
-                  <col width="30%" />
-                  <col width="10%" />
-                  <col width="10%" />
-                  <col width="11%" />
-                </colgroup>
-                <thead>
-                  <tr class="bg-dark bg-gradient bg-opacity-50 text-light">
-                    <th class="py-1 px-2 text-center text-light"></th>
-                    <th class="py-1 px-2 text-center text-light">Quantité</th>
-                    <th class="py-1 px-2 text-center text-light">Produit</th>
-                    <th class="py-1 px-2 text-center text-light">Prix HT</th>
-                    <th class="py-1 px-2 text-center text-light">Tva</th>
-                    <th class="py-1 px-2 text-center text-light">Remise %</th> <!-- Nouvelle colonne -->
-                    <th class="py-1 px-2 text-center text-light">Totale TTC</th>
-                  </tr>
-                </thead>
-                <tbody></tbody>
-              </table>
-            </div>
-            <div class="col-4 bg-gradient bg-dark bg-opacity-50 border h-100">
-              <div class="col-12 py-4 px-2">
-                <dl>
-                  {% comment %} <dt class="h4 fw-bold text-light">Sélectionner le client</dt>
-                  <dd class="text-end py-1 px-2 rounded-0 bg-light">
-                    <select id="client-id" class="form-select form-select-sm">
-                      <option value="" disabled selected></option>
-                      {% for client in clients %}
-                        <option value="{{ client.pk }}">{{ client }}</option>
-                      {% endfor %}
-                    </select>
-                  </dd> {% endcomment %}
-                  <dt class="h5 fw text-light">Sous-total HT</dt>
-                  <dd class="text-end py-1 px-2 rounded-0 bg-light">
-                    <input type="hidden" name="sub_total" value="0" />
-                    <span class="h4 fw" id="sub_total">0.00</span>
-                  </dd>
-
-
-                  <dt class="h5 fw text-light">Montant de TVA</dt>
-                  <dd><input type="number" class="form-control form-control-lg rounded-0 text-end" step="any" min="0" max="100" name="tax" value="0" readonly /></dd>
-                  <dt  hidden class="h5 fw text-light">Montant de l'impôt</dt>
-                  <dd  hidden class="text-end py-1 px-2 rounded-0 bg-light">
-                    <input type="hidden" name="tax_amount" value="0" />
-                    <span hidden class="h4 fw" id="tax_amount">0.00</span>
-                  </dd>
-                  <dt class="h5 fw text-light">Total général</dt>
-                  <dd class="text-end py-1 px-2 rounded-0 bg-light">
-                    <input type="hidden" name="grand_total" value="0" />
-                    <input type="hidden" name="tendered_amount" value="0" />
-                    <input type="hidden" name="amount_change" value="0" />
-                    <input type="hidden" id="total_discount" name="total_discount" value="0" />
-                    <span class="h4 fw" id="grand_total">0.00</span>
-                  </dd>
-                </dl>
-              </div>
+          <div class="col-lg-3 col-md-3 col-sm-6">
+            <div class="form-group mb-3">
+              <label for="product-qty">Quantité</label>
+              <input type="number" class="form-control form-control-sm text-center" step="any" id="product-qty" value="1" />
             </div>
           </div>
-        </fieldset>
-        <div class="row">
-          <div class="col-md-12 text-end">
-            <button class="btn btn-primary btn-sm rounded-0" type="button" id="check_out"><i class="mdi mdi-save"></i> Processus</button>
+          <div class="col-lg-4 col-md-3 col-sm-6">
+            <div class="form-group mb-3">
+              <button class="btn btn-light btn-sm bg-gradient border rounded-0 text-start w-100" type="button" id="add_item">
+                <i class="mdi mdi-plus"></i> Ajouter
+              </button>
+            </div>
           </div>
         </div>
-      </form>
-    </div>
+      </fieldset>
+      <fieldset>
+        <div class="row" id="POS-field">
+          <div class="col-lg-8 col-md-7 col-sm-12 bg-gradient bg-light border">
+            <table class="table table-bordered">
+              <colgroup>
+                <col width="5%" />
+                <col width="10%" />
+                <col width="30%" />
+                <col width="10%" />
+                <col width="10%" />
+                <col width="11%" />
+              </colgroup>
+              <thead>
+                <tr class="bg-dark bg-gradient bg-opacity-50 text-light">
+                  <th class="py-1 px-2 text-center text-light"></th>
+                  <th class="py-1 px-2 text-center text-light">Quantité</th>
+                  <th class="py-1 px-2 text-center text-light">Produit</th>
+                  <th class="py-1 px-2 text-center text-light">Prix HT</th>
+                  <th class="py-1 px-2 text-center text-light">Tva</th>
+                  <th class="py-1 px-2 text-center text-light">Remise %</th>
+                  <th class="py-1 px-2 text-center text-light">Totale TTC</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="col-lg-4 col-md-5 col-sm-12 bg-gradient bg-dark bg-opacity-50 border">
+            <div class="col-12 py-4 px-2">
+              <dl>
+                <dt class="h5 fw text-light">Sous-total HT</dt>
+                <dd class="text-end py-1 px-2 rounded-0 bg-light">
+                  <input type="hidden" name="sub_total" value="0" />
+                  <span class="h4 fw" id="sub_total">0.00</span>
+                </dd>
+
+                <dt class="h5 fw text-light">Montant de TVA</dt>
+                <dd>
+                  <input type="number" class="form-control form-control-sm rounded-0 text-end" step="any" min="0" max="100" name="tax" value="0" readonly />
+                </dd>
+
+                <dt class="h5 fw text-light">Montant de remise</dt>
+                <dd class="text-end py-1 px-2 rounded-0 bg-light">
+                  <input type="hidden" name="amountDescount" value="0" />
+                  <span class="h4 fw" id="amountDescount">0.00</span>
+                </dd>
+
+                <dt class="h5 fw text-light">Total général</dt>
+                <dd class="text-end py-1 px-2 rounded-0 bg-light">
+                  <input type="hidden" name="grand_total" value="0" />
+                  <input type="hidden" name="tendered_amount" value="0" />
+                  <input type="hidden" name="amount_change" value="0" />
+                  <input type="hidden" id="total_discount" name="total_discount" value="0" />
+                  <span class="h4 fw" id="grand_total">0.00</span>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+      <div class="row">
+        <div class="col-md-12 text-end">
+          <button class="btn btn-primary btn-sm rounded-0" type="button" id="check_out">
+            <i class="mdi mdi-save"></i> Processus
+          </button>
+        </div>
+      </div>
+    </form>
   </div>
+</div>
+
   <noscript id="item-clone">
     <tr>
       <td class="px-2 py-1 text-center">
@@ -194,10 +193,12 @@
     $('[name="tax"]').val(total_tax.toFixed(3));
     $('#tax_amount').text(parseFloat(total_tax).toLocaleString('en-US'));
     $('[name="tax_amount"]').val(parseFloat(total_tax));
+    $('#amountDescount').text(parseFloat(total_discount));
+    $('[name="amountDescount"]').val(parseFloat(total_discount));
     $('#grand_total').text(parseFloat(grand_total).toLocaleString('en-US'));
     $('[name="grand_total"]').val(parseFloat(grand_total));
-    $('#sub_total').text(parseFloat(sub_total).toLocaleString('en-US'));
-    $('[name="sub_total"]').val(parseFloat(sub_total));
+    $('#sub_total').text(parseFloat(sub_total).toLocaleString('fr-FR'));
+    $('[name="sub_total"]').val(parseFloat(sub_total).toFixed(3));
     $('[name="total_discount"]').val(parseFloat(total_discount));
   }
 
@@ -329,7 +330,7 @@
         success: function(resp) {
           if (typeof resp == 'object' && resp.status == 'success') {
             el.removeClass("alert alert-danger err-msg");
-            uni_modal("Recibo", "{% url 'pos:receipt-modal' %}?id=" + resp.sale);
+            uni_modal("Reçu", "{% url 'pos:receipt-modal' %}?id=" + resp.sale);
             $('#uni_modal').on('hide.bs.modal', function() {
               location.reload();
             });

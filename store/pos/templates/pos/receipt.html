@@ -9,7 +9,7 @@
         <!-- Header -->
         <div class="lh-1 text-center">
             <small class="fw-bold">Point de vente</small><br>
-            <small class="fw-bold">Reçu non officiel</small>
+            <small class="fw-bold">---------------</small>
         </div>
         <hr>
 
@@ -25,28 +25,28 @@
         <!-- Sales Items -->
         <div class="lh-1">
             <div class="d-flex w-100 align-items-end border-bottom">
-                <div class="col-2 text-center fw-bold">Qté</div>
+                <div class="col-1 text-center fw-bold">Qté</div>
                 <div class="col-3 text-center fw-bold">Produit</div>
                 <div class="col-2 text-center fw-bold">Prix U HT</div>
 
-                <div class="col-1 text-center fw-bold">Rem</div>
-                <div class="col-1 text-center fw-bold">TVA</div>
+                <div class="col-2 text-center fw-bold">Rem</div>
+                <div class="col-2 text-center fw-bold">TVA</div>
                 <div class="col-2 text-center fw-bold">Total</div>
             </div>
             {% for item in salesItems %}
             <div class="d-flex w-100 align-items-end">
-                <div class="col-2 text-center">{{ item.qty|intcomma|floatformat:0 }}</div>
-                <div class="col-3">
+                <div class="col-1 text-center">{{ item.qty|intcomma|floatformat:0 }}</div>
+                <div class="col-3 text-center">
                     <div class="lh-1">
                         <small>{{ item.product }}</small><br>
                         {% comment %} <small>TVA: {{ item.taxpercentage|intcomma }}%</small><br> {% endcomment %}
                     </div>
                 </div>
-                <div class="col-2 text-center">{{ item.price|intcomma }} TND</div>
-                <div class="col-1 text-center">{{ item.discount|intcomma }}%</div>
-                <div class="col-1 text-center">{{ item.product.taxpercentage|intcomma }} %</div>
+                <div class="col-2 text-center">{{ item.price|intcomma }} </div>
+                <div class="col-2 text-center">{{ item.discount|intcomma }}%</div>
+                <div class="col-2 text-center">{{ item.product.taxpercentage|intcomma }} %</div>
 
-                <div class="col-2 text-end">{{ item.total|intcomma }} TND</div>
+                <div class="col-2 text-end">{{ item.total|intcomma }} </div>
             </div>
             {% endfor %}
             <hr>

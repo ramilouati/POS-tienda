@@ -8,6 +8,7 @@ handler403 = views.error_403
 app_name = 'pos'
 urlpatterns = [
     path('pos', views.pos, name="pos-page"),
+    path('inventorybyqty', views.products_to_purchase, name="inventorybyqty"),
     path('checkout-modal', views.checkout_modal, name="checkout-modal"),
     path('save-pos', views.save_pos, name="save-pos"),
     path('sales', views.salesList, name="sales-page"),

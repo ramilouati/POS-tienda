@@ -14,6 +14,9 @@ from django.utils.dateformat import DateFormat
 
 from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import render
+from django.utils.timezone import now, timedelta
+
+from django.db.models import Sum, F
 
 from django.db import transaction
 
@@ -83,8 +86,8 @@ def save_pos(request):
             tax_amount=data['tax_amount'],
             grand_total=data['grand_total'],
             tendered_amount=data['tendered_amount'],
-            amount_change= data['amount_change'],
-            discount_amount= data['total_discount'],
+            amount_change= "{:.3f}".format(float(data['amount_change'])),
+            discount_amount = "{:.3f}".format(float(data['total_discount'])),
             cliente=client.name,  # Store the client's name as a string
         )
         sales.save()
@@ -99,7 +102,7 @@ def save_pos(request):
             total = float(qty) * float(price)
             totalDescounted = total - (total * (float(discount) / 100))
 
-            totalTax = totalDescounted * (1+(float(product.taxpercentage) / 100))
+            totalTax = "{:.3f}".format(totalDescounted * (1+(float(product.taxpercentage) / 100)))
             sales_item = salesItems(
                 sale=sales,
                 product=product,
@@ -113,7 +116,7 @@ def save_pos(request):
 
         resp['status'] = 'success'
         resp['sale'] = sale_id
-        messages.success(request, "La venta fue registrada.")
+        messages.success(request, "La vente à été enregistrée.")
     except Exception as e:
         resp['msg'] = "An error occurred: " + str(e)
 
@@ -221,7 +224,7 @@ def receipt(request):
     
         # Cambiar el idioma a español para la fecha
     with translation.override('fr-FR'):
-        formatted_date = DateFormat(sales.date_added).format('d \de F Y')
+        formatted_date = DateFormat(sales.date_added).format(r'd-m-Y')
     context = {
         "transaction": transaction,
         "salesItems": ItemList,
@@ -248,6 +251,40 @@ def delete_sale(request):
     except Exception as e:
         resp['msg'] = f"Ocurrió un error: {str(e)}"
     return HttpResponse(json.dumps(resp), content_type='application/json')
+
+@login_required
+@permission_required('pos.inventorybyqty', raise_exception=True)
+def products_to_purchase(request):
+    # Define the threshold for low stock quantity (you can customize this)
+    low_stock_threshold = 10
+
+    # Define the time period for sales (e.g., last 30 days)
+    start_date = now() - timedelta(days=30)
+
+    # Calculate the total quantity sold for each product in the last period
+    sales_data = (
+        salesItems.objects.filter(sale__date_added__gte=start_date)
+        .values('product__id', 'product__name', 'product__quantity')
+        .annotate(total_sold=Sum('qty'))
+        .order_by('-total_sold')  # Sort by sales rate (most sold first)
+    )
+
+    # Filter products that are low in stock and add sales data
+    products_to_purchase = []
+    for data in sales_data:
+        product = Products.objects.filter(id=data['product__id']).first()
+        if product and product.quantity <= low_stock_threshold:
+            products_to_purchase.append({
+                'id': product.id,
+                'name': product.name,
+                'quantity_in_stock': product.quantity,
+                'total_sold': data['total_sold'],
+            })
+
+    # Render the data or return as JSON
+    return render(request, 'pos/products_to_purchase.html', {
+        'products_to_purchase': products_to_purchase,
+    })
 
 def error_403(request, exception=None):
     return render(request, 'errors/403.html', status=403)
