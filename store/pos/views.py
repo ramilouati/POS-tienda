@@ -79,6 +79,8 @@ def save_pos(request):
         client = get_object_or_404(Client, id=client_id)
 
         # Create the Sales instance with the client's name
+        print("Client Name:", client.name)
+        print(data)
         sales = Sales(
             code=code,
             sub_total=data['sub_total'],

@@ -13,6 +13,18 @@
     <hr class="w-100">
 </div>
 <div class="mdc-layout-grid__cell stretch-card mdc-layout-grid__cell--span-3-desktop mdc-layout-grid__cell--span-3-tablet">
+    <div class="mdc-card info-card info-card--warning">
+        <div class="card-inner">
+            <h5 class="card-title">Les ventes d'aujourd'hui</h5>
+            <h5 class="font-weight-light pb-2 mb-1 border-bottom">{{ total_sales|intcomma }}</h5>
+            <p class="tx-12 text-muted">Ventes totales aujourd'hui</p>
+            <div class="card-icon-wrapper">
+                <i class="material-icons">announcement</i>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="mdc-layout-grid__cell stretch-card mdc-layout-grid__cell--span-3-desktop mdc-layout-grid__cell--span-3-tablet">
     <div class="mdc-card info-card info-card--danger">
         <div class="card-inner">
             <h5 class="card-title">
@@ -69,18 +81,7 @@
         </div>
     </div>
 </div>
-<div class="mdc-layout-grid__cell stretch-card mdc-layout-grid__cell--span-3-desktop mdc-layout-grid__cell--span-3-tablet">
-    <div class="mdc-card info-card info-card--warning">
-        <div class="card-inner">
-            <h5 class="card-title">Les ventes d'aujourd'hui</h5>
-            <h5 class="font-weight-light pb-2 mb-1 border-bottom">{{ total_sales|intcomma }}</h5>
-            <p class="tx-12 text-muted">Ventes totales aujourd'hui</p>
-            <div class="card-icon-wrapper">
-                <i class="material-icons">announcement</i>
-            </div>
-        </div>
-    </div>
-</div>
+
 <div class="mdc-layout-grid__cell stretch-card mdc-layout-grid__cell--span-3-desktop mdc-layout-grid__cell--span-3-tablet">
     <div class="mdc-card info-card info-card--warning">
         <div class="card-inner">
@@ -115,6 +116,27 @@
     <div class="mdc-card">
         <h5 class="card-title">Produits les plus vendus</h5>
         {% for product in most_saled_products_stats %}
+        <div class="mb-2">
+            <p class="mb-1">{{ product.product__name }} ({{ product.total }})</p>
+            <div class="progress">
+                {% with percentage=product.total|floatformat:2|multiply:100|divide:max_sold %}
+                <div class="progress-bar bg-primary" role="progressbar" 
+                     style="width: {{ percentage }}%;" 
+                     aria-valuenow="{{ percentage }}" 
+                     aria-valuemin="0" 
+                     aria-valuemax="100">
+                    {{ percentage|floatformat:0 }}%
+                </div>
+                {% endwith %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+<div class="mdc-layout-grid__cell stretch-card mdc-layout-grid__cell--span-6">
+    <div class="mdc-card">
+        <h5 class="card-title">Produits les moins vendus</h5>
+        {% for product in most_unsold_products_stats %}
         <div class="mb-2">
             <p class="mb-1">{{ product.product__name }} ({{ product.total }})</p>
             <div class="progress">

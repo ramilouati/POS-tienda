@@ -74,6 +74,7 @@ def home(request):
     low_quantity_products = Products.objects.filter(quantity__lt=10).count()
     
     most_saled_products_stats = salesItems.objects.values('product__name').annotate(total=Sum('qty')).order_by('-total')
+    most_unsold_products_stats = salesItems.objects.values('product__name').annotate(total=Sum('qty')).order_by('total')
     
     max_sold = most_saled_products_stats[0]['total'] if most_saled_products_stats else 1  # Avoid division by zero
     
@@ -99,6 +100,7 @@ def home(request):
         'total_sales': total_sales,
         'low_quantity_products': low_quantity_products,
         'most_saled_products_stats': most_saled_products_stats,
+        'most_unsold_products_stats': most_unsold_products_stats,
         'max_sold': max_sold
     }
     
