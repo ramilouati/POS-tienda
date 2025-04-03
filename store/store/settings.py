@@ -159,13 +159,16 @@ USE_TZ = False
 
 
 # original
-STATIC_URL = 'static/'
-STATICFILES_DIRS = (
-    # location of your application, should not be public web accessible 
-    './static',
-)
+STATIC_URL = '/static/'
 
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+STATIC_ROOT = os.path.join(BASE_DIR, 'static_collected')
+
+# Media files
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/login'
-
