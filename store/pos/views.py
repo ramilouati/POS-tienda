@@ -85,7 +85,7 @@ def save_pos(request):
             code=code,
             sub_total=data['sub_total'],
             tax=data['tax'],
-            tax_amount=data['tax_amount'],
+            tax_amount=data['tax'],
             grand_total=data['grand_total'],
             tendered_amount=data['tendered_amount'],
             amount_change= "{:.3f}".format(float(data['amount_change'])),
