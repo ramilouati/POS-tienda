@@ -2,14 +2,16 @@
 <div class="mdc-layout-grid__cell stretch-card mdc-layout-grid__cell--span-12">
     <div class="mdc-card py-2">
         <div class="d-flex justify-content-between align-items-center">
-            <h4 class="card-title mb-0">Produits à acheter</h4>
+            <button id="btn1" class="btn btn-primary" onclick="showTable('table1', 'btn1')">Produits à acheter (Plus vendu)</button>
+            <button id="btn2" class="btn btn-secondary" onclick="showTable('table2', 'btn2')">Produits à acheter (Bas quantité)</button>
         </div>
     </div>
 </div>
-<div class="mdc-layout-grid__cell stretch-card mdc-layout-grid__cell--span-12">
+
+<div id="table1" class="mdc-layout-grid__cell stretch-card mdc-layout-grid__cell--span-12" style="display:none;">
     <div class="mdc-card">
         <div class="table-responsive">
-            <table id="miTabla" class="table table-striped table-bordered">
+            <table id="miTabla1" class="table table-striped table-bordered">
                 <thead>
                     <tr>
                         <th class="text-center py-1">Produit</th>
@@ -19,22 +21,74 @@
                 </thead>
                 <tbody>
                     {% for product in products_to_purchase %}
-                  
                         <tr>
                             <td>{{ product.name }}</td>
                             <td>{{ product.quantity_in_stock }}</td>
                             <td>{{ product.total_sold }}</td>
-             
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="table2" class="mdc-layout-grid__cell stretch-card mdc-layout-grid__cell--span-12" style="display:none;">
+    <div class="mdc-card">
+        <div class="table-responsive">
+            <table id="miTabla2" class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>Code-barre</th>
+                        <th>Nom de produit</th>
+                        <th>Catégorie</th>
+                        <th>Coût</th>
+                        <th>Quantité</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in low_quantity_products %}
+                    <tr>
+                      <td class="text-center">{{ product.code_bar }}</td>
+                      <td class="link-cell">
+                        <a href="{% url 'inventory:product_detail' product.pk %}">{{ product.name }}</a>
+                      </td>
+                      <td class="link-cell">
+                        <a href="{% url 'inventory:category_products' product.category.id %}">
+                          {{ product.category.name }}
+                        </a>
+                      </td>
+                      <td class="text-center">{{ product.cost }}</td>
+                      <td class="text-center">{{ product.quantity }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
-</div>{% endblock pageContent %} {% block ScriptBlock %}
+</div>
+{% endblock pageContent %} {% block ScriptBlock %}
 <script>
+    function showTable(tableId, buttonId) {
+        document.getElementById('table1').style.display = 'none';
+        document.getElementById('table2').style.display = 'none';
+        document.getElementById(tableId).style.display = 'block';
+        
+        document.getElementById('btn1').classList.remove('btn-primary');
+        document.getElementById('btn1').classList.add('btn-secondary');
+        document.getElementById('btn2').classList.remove('btn-primary');
+        document.getElementById('btn2').classList.add('btn-secondary');
+        
+        document.getElementById(buttonId).classList.remove('btn-secondary');
+        document.getElementById(buttonId).classList.add('btn-primary');
+    }
+    
+    document.addEventListener("DOMContentLoaded", function() {
+        showTable('table1', 'btn1');
+    });
+
     $(document).ready(function() {
-      $('#miTabla').DataTable({
+      $('#miTabla1').DataTable({
         "paging": true,
         "ordering": true,
         "searching": true,
@@ -45,6 +99,18 @@
         "buttons": ['copy', 'csv', 'excel', 'pdf', 'print', 'colvis']
       }).buttons().container().appendTo('#miTabla_wrapper .col-md-6:eq(0)');
     });
+    $(document).ready(function() {
+        $('#miTabla2').DataTable({
+          "paging": true,
+          "ordering": true,
+          "searching": true,
+          "responsive": true,
+          "lengthChange": false,
+          "autoWidth": false,
+          "order": [[1, "desc"]], 
+          "buttons": ['copy', 'csv', 'excel', 'pdf', 'print', 'colvis']
+        }).buttons().container().appendTo('#miTabla_wrapper .col-md-6:eq(0)');
+      });
   </script>
 
 {% endblock ScriptBlock %}

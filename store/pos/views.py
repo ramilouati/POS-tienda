@@ -280,10 +280,12 @@ def products_to_purchase(request):
                 'quantity_in_stock': product.quantity,
                 'total_sold': data['total_sold'],
             })
+    low_quantity_products = Products.objects.filter(quantity__lte=10)
 
     # Render the data or return as JSON
     return render(request, 'pos/products_to_purchase.html', {
         'products_to_purchase': products_to_purchase,
+        'low_quantity_products': low_quantity_products
     })
 
 def error_403(request, exception=None):

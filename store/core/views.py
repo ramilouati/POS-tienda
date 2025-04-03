@@ -68,27 +68,42 @@ def home(request):
     current_year = now.strftime("%Y")
     current_month = now.strftime("%m")
     current_day = now.strftime("%d")
-    categories = len(Category.objects.all())
-    products = len(Products.objects.all())
-    transaction = len(Sales.objects.filter(
+
+    categories = Category.objects.count()
+    products = Products.objects.count()
+    low_quantity_products = Products.objects.filter(quantity__lt=10).count()
+    
+    most_saled_products_stats = salesItems.objects.values('product__name').annotate(total=Sum('qty')).order_by('-total')
+    
+    max_sold = most_saled_products_stats[0]['total'] if most_saled_products_stats else 1  # Avoid division by zero
+    
+    transaction = Sales.objects.filter(
         date_added__year=current_year,
-        date_added__month = current_month,
-        date_added__day = current_day
-    ))
+        date_added__month=current_month,
+        date_added__day=current_day
+    ).count()
+
     today_sales = Sales.objects.filter(
         date_added__year=current_year,
-        date_added__month = current_month,
-        date_added__day = current_day
-    ).all()
-    total_sales = sum(today_sales.values_list('grand_total',flat=True))
+        date_added__month=current_month,
+        date_added__day=current_day
+    )
+
+    total_sales = sum(today_sales.values_list('grand_total', flat=True))
+
     context = {
-        'page_title':'Home',
-        'categories' : categories,
-        'products' : products,
-        'transaction' : transaction,
-        'total_sales' : total_sales,
+        'page_title': 'Home',
+        'categories': categories,
+        'products': products,
+        'transaction': transaction,
+        'total_sales': total_sales,
+        'low_quantity_products': low_quantity_products,
+        'most_saled_products_stats': most_saled_products_stats,
+        'max_sold': max_sold
     }
-    return render(request, 'home.html',context)
+    
+    return render(request, 'home.html', context)
+
 
 
 def about(request):

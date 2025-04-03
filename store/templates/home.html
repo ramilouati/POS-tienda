@@ -1,4 +1,6 @@
 {% extends "base.html" %} 
+{% load custom_filters %}
+
 {% load static %}{% load humanize %} {% block pageContent %}
 <div class="mdc-layout-grid__cell stretch-card mdc-layout-grid__cell--span-12">
     <div class="mdc-card">
@@ -11,6 +13,20 @@
     <hr class="w-100">
 </div>
 <div class="mdc-layout-grid__cell stretch-card mdc-layout-grid__cell--span-3-desktop mdc-layout-grid__cell--span-3-tablet">
+    <div class="mdc-card info-card info-card--danger">
+        <div class="card-inner">
+            <h5 class="card-title">
+                <a href="{% url 'inventory:category_list' %}">Stock</a>
+            </h5>
+            <h5 class="font-weight-light pb-2 mb-1 border-bottom">{{ low_quantity_products|intcomma }}</h5>
+            <p class="tx-12 text-muted">Nombre de produit en bas quantité</p>
+            
+            <div class="card-icon-wrapper">
+                <i class="material-icons">announcement</i>
+            </div>
+        </div>
+    </div>
+</div><div class="mdc-layout-grid__cell stretch-card mdc-layout-grid__cell--span-3-desktop mdc-layout-grid__cell--span-3-tablet">
     <div class="mdc-card info-card info-card--success">
         <div class="card-inner">
             <h5 class="card-title">
@@ -92,6 +108,28 @@
                 <i class="mdi mdi-cash-multiple"></i>
             </div>
         </div>
+    </div>
+</div>
+
+<div class="mdc-layout-grid__cell stretch-card mdc-layout-grid__cell--span-6">
+    <div class="mdc-card">
+        <h5 class="card-title">Produits les plus vendus</h5>
+        {% for product in most_saled_products_stats %}
+        <div class="mb-2">
+            <p class="mb-1">{{ product.product__name }} ({{ product.total }})</p>
+            <div class="progress">
+                {% with percentage=product.total|floatformat:2|multiply:100|divide:max_sold %}
+                <div class="progress-bar bg-primary" role="progressbar" 
+                     style="width: {{ percentage }}%;" 
+                     aria-valuenow="{{ percentage }}" 
+                     aria-valuemin="0" 
+                     aria-valuemax="100">
+                    {{ percentage|floatformat:0 }}%
+                </div>
+                {% endwith %}
+            </div>
+        </div>
+        {% endfor %}
     </div>
 </div>
 {% endblock pageContent %}
