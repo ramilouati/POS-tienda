@@ -1,0 +1,123 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  {% if page_title %}
+    <title>{{ page_title }} | Grocery Point Of Sale System</title>
+  {% else %}
+    <title>Grocery Point Of Sale System</title>
+  {% endif %}
+
+  <!-- Styles CSS -->
+  <link rel="stylesheet" href="{% static 'posApp/assets/default/css/style.css' %}" />
+  <link rel="stylesheet" href="{% static 'posApp/assets/bootstrap/css/bootstrap.min.css' %}" />
+  <link rel="stylesheet" href="{% static 'posApp/assets/material-admin/vendors/mdi/css/materialdesignicons.min.css' %}" />
+  <link rel="stylesheet" href="{% static 'posApp/assets/material-admin/vendors/css/vendor.bundle.base.css' %}" />
+  <link rel="stylesheet" href="{% static 'posApp/assets/material-admin/vendors/flag-icon-css/css/flag-icon.min.css' %}" />
+  <link rel="stylesheet" href="{% static 'posApp/assets/material-admin/vendors/jvectormap/jquery-jvectormap.css' %}" />
+  <link rel="stylesheet" href="{% static 'posApp/assets/material-admin/css/demo/style.css' %}" />
+  <link rel="shortcut icon" href="{% static 'posApp/assets/material-admin/images/favicon.png' %}" />
+
+  <!-- Styles personnalisés -->
+  <style>
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-auto-rows: 150px;
+      gap: 10px;
+      width: 90%;
+      max-width: 1200px;
+      margin: 50px auto;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Preloader -->
+  <script src="{% static 'posApp/assets/material-admin/js/preloader.js' %}"></script>
+
+  <!-- Titre de la page -->
+  <div class="mdc-layout-grid__cell stretch-card mdc-layout-grid__cell--span-12">
+    <div class="mdc-card py-2 px-3">
+      <div class="d-flex justify-content-between align-items-center">
+        <h4 class="card-title mb-0">Liste des points de vente</h4>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModalCenter">
+          Créer un point de vente
+        </button>
+      </div>
+    </div>
+  </div>
+  
+
+  <!-- Contenu principal -->
+  <div class="container">
+    <!-- Bouton d'ajout -->
+
+    
+    <!-- Liste des points -->
+    <div class="mdc-layout-grid__cell stretch-card mdc-layout-grid__cell--span-12">
+      <div class="grid-container">
+        {% for business in business %}
+          <div class="card" style="width: 18rem;">
+            <img class="card-img-top" src="{% static 'posApp/assets/images/cashier.jpg' %}" alt="{{ business.name }}" />
+            <div class="card-body" style="background-color:rgb(255, 255, 255);">
+              <h5 class="card-title"><strong>{{ business.name }}</strong></h5>
+              <p class="card-text">Point de vente de {{ business.get_type_display }}</p>
+              <a href="{% url 'login' %}" class="btn btn-primary">Commencer</a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Bootstrap -->
+  <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalCenterTitle">Créer un point de vente</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!-- Contenu du formulaire ou autre -->
+
+         
+                    <form method="post" class="business-form">
+
+                      {% csrf_token %}
+                      {{ form.as_p }}
+                      <div class="form-group mt-4 text-end">
+                        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Annuler</button>
+                        <button type="submit" class="btn btn-success">Créer</button>
+                      </div>
+            
+                    </form>
+
+
+
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="{% static 'posApp/assets/default/js/jquery-3.6.0.min.js' %}"></script>
+  <script src="{% static 'posApp/assets/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">
+      {{ message }}
+    </div>
+  {% endfor %}
+{% endif %}
+
+</html>

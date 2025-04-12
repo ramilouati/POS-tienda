@@ -13,6 +13,7 @@ from django.urls import reverse_lazy
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 import json
+from .models import Bussiness
 
 from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
 from datetime import date, datetime
@@ -31,7 +32,11 @@ from django.utils.encoding import force_str
 from django.contrib.auth.tokens import default_token_generator
 from django.core.exceptions import ValidationError
 from django.shortcuts import render
+from django.views import generic
 
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .forms import CreateBusinessForm
 User = get_user_model()
 
 from.forms import *
@@ -184,6 +189,18 @@ def password_reset_request(request):
         form = PasswordResetEmailForm()
     return render(request=request, template_name="core/password_reset.html", context={"form": form})
 
+def welcome(request):
+
+    return render( request,'core/welcome.html')
+def list_business(request):
+    business = Bussiness.objects.all()
+    form = CreateBusinessForm()  # <- pas juste la classe, mais une instance
+    context = {
+        'business': business,
+        'form': form  # <- pas un nom bizarre comme 'fbusiness-form'
+    }
+    return render(request, 'core/list_business.html', context)
+
 
 
 def password_reset_confirm(request, uidb64, token):
@@ -214,3 +231,22 @@ def password_reset_confirm(request, uidb64, token):
         messages.error(request, 'El enlace de reseteo de contraseña es inválido o ha expirado.')
         return redirect('password_reset_request')  # Redirigir de nuevo a la solicitud de reseteo de contraseña
 
+
+def list_business(request):
+    if request.method == 'POST':
+        form = CreateBusinessForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Point de vente créé avec succès.")
+            return redirect('list_business')  # Redirige pour éviter de resoumettre le formulaire
+        else:
+            messages.error(request, "Erreur dans le formulaire. Veuillez vérifier les champs.")
+    else:
+        form = CreateBusinessForm()
+
+    business = Bussiness.objects.all()
+    context = {
+        'business': business,
+        'form': form
+    }
+    return render(request, 'core/list_business.html', context)

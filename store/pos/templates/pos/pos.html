@@ -51,8 +51,15 @@
               </button>
             </div>
           </div>
+          <div class="col-lg-3 col-md-3 col-sm-6">
+
+          <div class="form-group mb-3">
+            <label for="global-discount" class="text-dark">Remise Globale %</label>
+            <input type="number" id="global-discount" class="form-control form-control-sm rounded-0 text-center" value="0" min="0" max="100" />
+          </div>
         </div>
-      </fieldset>
+      </div>
+    </fieldset>
       <fieldset>
         <div class="row" id="POS-field">
           <div class="col-lg-8 col-md-7 col-sm-12 bg-gradient bg-light border">
@@ -82,6 +89,10 @@
           <div class="col-lg-4 col-md-5 col-sm-12 bg-gradient bg-dark bg-opacity-50 border">
             <div class="col-12 py-4 px-2">
               <dl>
+   
+
+
+                
                 <dt class="h5 fw text-light">Sous-total HT</dt>
                 <dd class="text-end py-1 px-2 rounded-0 bg-light">
                   <input type="hidden" name="sub_total" value="0" />
@@ -161,6 +172,18 @@
       prod_arr[product_json[k].id] = product_json[k];
     });
   }
+// Apply global discount to all items
+$('#global-discount').on('input', function () {
+  var globalDiscount = parseFloat($(this).val());
+  if (isNaN(globalDiscount) || globalDiscount < 0) globalDiscount = 0;
+  if (globalDiscount > 100) globalDiscount = 100;
+
+  $('#POS-field table tbody tr').each(function () {
+    $(this).find('[name="discount[]"]').val(globalDiscount);
+  });
+
+  calc(); // Recalculate totals
+});
 
   function calc() {
     var sub_total = 0;
